@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { Link } from 'react-router-dom';
 import './teams.css';
 
@@ -20,7 +20,6 @@ interface Team {
 const TeamList = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [playerId, setPlayerId] = useState<number | null>(null);
-  const [isMember, setIsMember] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,10 +33,6 @@ const TeamList = () => {
         const playerRes = await axios.get(`http://localhost:5275/api/players/byUser/${userId}`);
         const fetchedPlayerId = playerRes.data.id;
         setPlayerId(fetchedPlayerId);
-
-        const membersRes = await axios.get('http://localhost:5275/api/TeamMembers');
-        const alreadyInTeam = membersRes.data.some((tm: any) => tm.playerId === fetchedPlayerId);
-        setIsMember(alreadyInTeam);
 
         const teamsRes = await axios.get('http://localhost:5275/api/Teams');
         setTeams(teamsRes.data);
@@ -72,22 +67,26 @@ const TeamList = () => {
     <div className="team-page">
       <h2>Takımlar</h2>
       <div className="team-grid">
-        {teams.map((team) => (
-          <div className="team-card" key={team.id}>
-            <div className="team-icon">{team.name[0]}</div>
-            <h3>{team.name}</h3>
-            <p>🧑‍✈️ Kaptan: {team.captain?.firstName || 'Belirlenmemiş'}</p>
-            <p>👥 Oyuncular: {team.players.length}</p>
+        {teams.map((team) => {
+          const isPlayerInTeam = team.players.some(p => p.id === playerId);
 
-            {isMember ? (
-              <button className="joined-btn" disabled>Katıldınız</button>
-            ) : (
-              <button className="join-btn" onClick={() => handleJoin(team.id)}>Takıma Katıl</button>
-            )}
+          return (
+            <div className="team-card" key={team.id}>
+              <div className="team-icon">{team.name[0]}</div>
+              <h3>{team.name}</h3>
+              <p>🧑‍✈️ Kaptan: {team.captain?.firstName || 'Belirlenmemiş'}</p>
+              <p>👥 Oyuncular: {team.players.length}</p>
 
-            <Link to={`/teams/${team.id}`} className="detail-link">Detay</Link>
-          </div>
-        ))}
+              {isPlayerInTeam ? (
+                <button className="joined-btn" disabled>Katıldınız</button>
+              ) : (
+                <button className="join-btn" onClick={() => handleJoin(team.id)}>Takıma Katıl</button>
+              )}
+
+              <Link to={`/teams/${team.id}`} className="detail-link">Detay</Link>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
