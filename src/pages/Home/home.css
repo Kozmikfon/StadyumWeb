@@ -8,14 +8,24 @@
   font-family: sans-serif;
 }
 
+/* Sol: Logo */
 .logo {
+  flex: 1;
+  text-align: left;
   font-size: 22px;
   font-weight: bold;
   color: #0d47a1;
 }
 
+/* Orta: Menü */
+.nav-links {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+}
+
 .nav-links a {
-  margin-left: 25px;
   text-decoration: none;
   font-weight: bold;
   color: #0d47a1;
@@ -26,9 +36,29 @@
   text-decoration: underline;
 }
 
+/* Sağ: Profil butonu */
+.right-section {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.profile-btn {
+  background: transparent;
+  border: none;
+  font-weight: bold;
+  color: #0d47a1;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.profile-btn:hover {
+  text-decoration: underline;
+}
+
 /* Hero section */
 .hero-section {
-  background-image: url('/src/assets/topp.jpg');
+  background-image: url('/');
   background-size: cover;
   background-position: center;
   height: 80vh;
@@ -62,4 +92,45 @@
 
 .hero-content button:hover {
   background-color: #ffa000;
+}
+
+/* SLIDER ALANI */
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 85vh;
+  overflow: hidden;
+}
+
+.slider-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.4);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  padding: 10px 15px;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 50%;
+}
+
+.slider-btn.left {
+  left: 20px;
+}
+
+.slider-btn.right {
+  right: 20px;
+}
+
+.slider-btn:hover {
+  background-color: rgba(0, 0, 0, 0.7);
 }
