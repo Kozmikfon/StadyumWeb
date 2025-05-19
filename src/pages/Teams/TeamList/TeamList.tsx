@@ -20,6 +20,7 @@ interface Team {
 const TeamList = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [playerId, setPlayerId] = useState<number | null>(null);
+  const [currentTeamId, setCurrentTeamId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +34,7 @@ const TeamList = () => {
         const playerRes = await axios.get(`http://localhost:5275/api/players/byUser/${userId}`);
         const fetchedPlayerId = playerRes.data.id;
         setPlayerId(fetchedPlayerId);
+        setCurrentTeamId(playerRes.data.teamId || null);
 
         const teamsRes = await axios.get('http://localhost:5275/api/Teams');
         setTeams(teamsRes.data);
@@ -47,6 +49,11 @@ const TeamList = () => {
   const handleJoin = async (teamId: number) => {
     const token = localStorage.getItem('token');
     if (!token || playerId === null) return alert("Giriş yapılmalı.");
+
+    if (currentTeamId) {
+      const confirmSwitch = window.confirm("Zaten bir takıma aitsiniz. Başka bir takıma geçmek istediğinize emin misiniz?");
+      if (!confirmSwitch) return;
+    }
 
     try {
       await axios.post(
