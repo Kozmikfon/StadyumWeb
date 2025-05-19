@@ -34,11 +34,11 @@ const PlayerDetailPage: React.FC = () => {
     fetchPlayer();
   }, [id]);
 
-  if (!player) return <p>Yükleniyor...</p>;
+  if (!player) return <p className="player-loading">Yükleniyor...</p>;
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">
+    <div className="player-detail">
+      <h2>
         {player.firstName} {player.lastName}
       </h2>
       <p><strong>Email:</strong> {player.email}</p>

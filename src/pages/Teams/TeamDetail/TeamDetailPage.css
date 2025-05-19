@@ -1,0 +1,36 @@
+.team-detail {
+  padding: 24px;
+  max-width: 700px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f1f1f1;
+}
+
+.team-detail h2 {
+  font-size: 26px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.team-detail p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.team-detail h3 {
+  font-size: 20px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.team-detail ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.team-loading {
+  padding: 20px;
+  font-size: 18px;
+  text-align: center;
+}
