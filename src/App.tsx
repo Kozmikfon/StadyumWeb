@@ -2,12 +2,13 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import Dashboard from './pages/Dashboard/Dashboard';
-import PlayerList from './pages/Player/PlayerList';
-import TeamList from './pages/Teams/TeamList';
+import PlayerList from './pages/Player/PlayerList/PlayerList';
+import TeamList from './pages/Teams/TeamList/TeamList';
 import Home from './pages/Home/Home';
 import TeamDetailPage from './pages/Teams/TeamDetail/TeamDetailPage';
 import MatchDetailPage from './pages/Matches/MatchDetailPage';
 import PlayerDetailPage from './pages/Player/PlayerDetailPage';
+import CreateMatch from './pages/Matches/CreateMatch/CreateMatch';
 
 const Router = () => {
   const token = localStorage.getItem('token');
@@ -41,6 +42,15 @@ const Router = () => {
             <Route path="/teams/:id" element={<TeamDetailPage />} />
             <Route path="/matches/:id" element={<MatchDetailPage />} />
             <Route path="/players/:id" element={<PlayerDetailPage />} />
+            <Route path="/matches/create" element={<CreateMatch />} />
+            <Route path="/profile" element={<Home />} />
+            <Route path="/stats" element={<Home />} />
+            <Route path="/matches" element={<Home />} />
+            <Route path="/players/:id" element={<PlayerDetailPage />} />
+            <Route path="/matches/:id" element={<MatchDetailPage />} />
+            <Route path="/teams/:id" element={<TeamDetailPage />} />
+            <Route path="/matches/create" element={<CreateMatch />} />
+            
 
 
           </>
