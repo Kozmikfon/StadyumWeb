@@ -49,7 +49,7 @@ const Home = () => {
 
         <div className="menu-card" onClick={() => navigate('/matches')}>
           <h3>Maçlar</h3>
-          <p>Maçlara katıl veya düzenle</p>
+          <p>Maçlara katıl veya yeni maç oluştur</p>
         </div>
 
         <div className="menu-card" onClick={() => navigate('/profile')}>

@@ -4,10 +4,29 @@
   margin: 0 auto;
 }
 
+.matchlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .matches-title {
   font-size: 24px;
-  text-align: center;
-  margin-bottom: 20px;
+  text-align: left;
+}
+
+.create-match-button {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.create-match-button:hover {
+  background-color: #218838;
 }
 
 .matches-grid {
@@ -36,23 +55,4 @@
 
 .detail-link:hover {
   background-color: #117a8b;
-}
-.matchlist-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.create-match-button {
-  background-color: #28a745;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.create-match-button:hover {
-  background-color: #218838;
 }
