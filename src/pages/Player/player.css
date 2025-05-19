@@ -1,0 +1,42 @@
+.players-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.players-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: darkred;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.player-card {
+  background-color: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.player-card:hover {
+  transform: scale(1.02);
+}
+
+.player-card h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.player-card p {
+  font-size: 14px;
+  color: #555;
+  margin: 5px 0;
+}
