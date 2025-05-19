@@ -4,10 +4,7 @@ import ImageSlider from '../../Components/ImageSlider';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const Home = () => {
-  const navigate = useNavigate();
-
- interface MatchPreview {
+interface MatchPreview {
   matchDate: string;
   team1Name: string;
   team2Name: string;
@@ -19,20 +16,24 @@ interface PlayerPreview {
   rating: number;
 }
 
-const [upcomingMatches, setUpcomingMatches] = useState<MatchPreview[]>([]);
-const [topPlayers, setTopPlayers] = useState<PlayerPreview[]>([]);
+const Home = () => {
+  const navigate = useNavigate();
 
+  const [upcomingMatches, setUpcomingMatches] = useState<MatchPreview[]>([]);
+  const [topPlayers, setTopPlayers] = useState<PlayerPreview[]>([]);
+  const [isLoadingMatches, setIsLoadingMatches] = useState(true);
+  const [isLoadingPlayers, setIsLoadingPlayers] = useState(true);
 
   useEffect(() => {
-    // Yaklaşan maçları çek
     axios.get('http://localhost:5275/api/matches/upcoming')
       .then(res => setUpcomingMatches(res.data))
-      .catch(err => console.error("Maçlar alınamadı:", err));
+      .catch(err => console.error("Maçlar alınamadı:", err))
+      .finally(() => setIsLoadingMatches(false));
 
-    // En iyi oyuncuları çek
     axios.get('http://localhost:5275/api/players/top')
       .then(res => setTopPlayers(res.data))
-      .catch(err => console.error("Oyuncular alınamadı:", err));
+      .catch(err => console.error("Oyuncular alınamadı:", err))
+      .finally(() => setIsLoadingPlayers(false));
   }, []);
 
   return (
@@ -85,36 +86,46 @@ const [topPlayers, setTopPlayers] = useState<PlayerPreview[]>([]);
       {/* Yaklaşan Maçlar */}
       <section className="upcoming-matches">
         <h2>Yaklaşan Maçlar</h2>
-        <ul>
-          {upcomingMatches.length > 0 ? (
-            upcomingMatches.map((match, i) => (
-              <li key={i}>
-                {new Date(match.matchDate).toLocaleDateString('tr-TR')} • {match.team1Name} vs {match.team2Name}
-              </li>
-            ))
-          ) : (
-            <li>Yaklaşan maç bulunamadı.</li>
-          )}
-        </ul>
+        {isLoadingMatches ? (
+  <div className="spinner"></div>
+) : (
+  <ul>
+    {upcomingMatches.length > 0 ? (
+      upcomingMatches.map((match, i) => (
+        <li key={i}>
+          {new Date(match.matchDate).toLocaleDateString('tr-TR')} • {match.team1Name} vs {match.team2Name}
+        </li>
+      ))
+    ) : (
+      <li>Yaklaşan maç bulunamadı.</li>
+    )}
+  </ul>
+)}
+
       </section>
 
       {/* En İyi Oyuncular */}
       <section className="top-players">
         <h2>En İyi Oyuncular</h2>
-        <div className="player-list">
-          {topPlayers.length > 0 ? (
-            topPlayers.map((player, i) => (
-              <div className="player-card" key={i}>
-                {i === 0 && '🏅'}
-                {i === 1 && '🥈'}
-                {i === 2 && '🥉'}
-                {i > 2 && '👤'} {player.firstName} {player.lastName} • {player.rating} Puan
-              </div>
-            ))
-          ) : (
-            <p>Oyuncu verisi bulunamadı.</p>
-          )}
+        {isLoadingPlayers ? (
+  <div className="spinner"></div>
+) : (
+  <div className="player-list">
+    {topPlayers.length > 0 ? (
+      topPlayers.map((player, i) => (
+        <div className="player-card" key={i}>
+          {i === 0 && '🏅'}
+          {i === 1 && '🥈'}
+          {i === 2 && '🥉'}
+          {i > 2 && '👤'} {player.firstName} {player.lastName} • {player.rating} Puan
         </div>
+      ))
+    ) : (
+      <p>Oyuncu verisi bulunamadı.</p>
+    )}
+  </div>
+)}
+
       </section>
 
       {/* Footer */}
