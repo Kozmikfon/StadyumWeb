@@ -35,6 +35,10 @@ const Router = () => {
 
             {/* Bilinmeyen rota yönlendirme */}
             <Route path="*" element={<Navigate to={role === 'Admin' ? '/dashboard' : '/'} />} />
+            <Route path="/teams/:id" element={<TeamDetailPage />} />
+            <Route path="/matches/:id" element={<MatchDetailPage />} />
+
+
           </>
         )}
       </Routes>

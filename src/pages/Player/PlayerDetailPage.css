@@ -1,0 +1,14 @@
+.player-detail {
+  padding: 24px;
+}
+
+.player-detail h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.player-detail p {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
