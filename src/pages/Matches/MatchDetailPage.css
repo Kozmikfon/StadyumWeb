@@ -1,0 +1,36 @@
+.match-detail {
+  padding: 24px;
+  max-width: 700px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f0f0f0;
+}
+
+.match-detail h2 {
+  font-size: 26px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.match-detail p {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.match-detail h3 {
+  font-size: 20px;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.match-detail ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.match-loading {
+  padding: 20px;
+  font-size: 18px;
+  text-align: center;
+}

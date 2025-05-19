@@ -5,6 +5,9 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import PlayerList from './pages/Player/PlayerList';
 import TeamList from './pages/Teams/TeamList';
 import Home from './pages/Home/Home';
+import TeamDetailPage from './pages/Teams/TeamDetail/TeamDetailPage';
+import MatchDetailPage from './pages/Matches/MatchDetailPage';
+import PlayerDetailPage from './pages/Player/PlayerDetailPage';
 
 const Router = () => {
   const token = localStorage.getItem('token');
