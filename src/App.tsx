@@ -13,6 +13,7 @@ import TeamDetailPage from './pages/Teams/TeamDetail/TeamDetailPage';
 import MatchList from './pages/Matches/MatchList/MatchList';
 import MatchDetailPage from './pages/Matches/MatchDetailPage';
 import CreateMatch from './pages/Matches/CreateMatch/CreateMatch';
+import PlayerProfile from './pages/Profile/PlayerProfile';
 
 const Router = () => {
   const token = localStorage.getItem('token');
@@ -51,11 +52,12 @@ const Router = () => {
             <Route path="/matches/create" element={<CreateMatch />} />
 
             {/* Profil / İstatistik yönlendirmeleri (şimdilik home'a bağlıysa) */}
-            <Route path="/profile" element={<Home />} />
-            <Route path="/stats" element={<Home />} />
+            <Route path="/profile" element={<PlayerProfile />} />
+            
 
             {/* Bilinmeyen route → anasayfaya yönlendir */}
             <Route path="*" element={<Navigate to="/" />} />
+
           </>
         )}
       </Routes>
