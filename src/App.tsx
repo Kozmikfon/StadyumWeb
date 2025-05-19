@@ -57,6 +57,7 @@ const Router = () => {
 
             {/* Bilinmeyen route → anasayfaya yönlendir */}
             <Route path="*" element={<Navigate to="/" />} />
+            
 
           </>
         )}
