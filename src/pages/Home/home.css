@@ -279,3 +279,19 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+.welcome-banner {
+  background: #e3f2fd;
+  padding: 20px 40px;
+  margin-top: 20px;
+  border-left: 5px solid #0d47a1;
+}
+.welcome-banner h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0d47a1;
+}
+.welcome-banner p {
+  margin: 5px 0 0 0;
+  font-size: 16px;
+  color: #333;
+}
