@@ -106,8 +106,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 3.5s ease-in-out;
 }
+
 
 .slider-btn {
   position: absolute;
@@ -133,4 +134,68 @@
 
 .slider-btn:hover {
   background-color: rgba(0, 0, 0, 0.7);
+}
+/* About / Tanıtım Alanı */
+.about-section {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f5f5f5;
+}
+
+.about-section h2 {
+  font-size: 32px;
+  margin-bottom: 15px;
+  color: #0d47a1;
+}
+
+.about-section p {
+  font-size: 18px;
+  max-width: 800px;
+  margin: 0 auto;
+  color: #333;
+}
+
+/* Özellik Kartları */
+.features-section {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 50px 40px;
+  flex-wrap: wrap;
+  background: #ffffff;
+}
+
+.feature-card {
+  background-color: #e3f2fd;
+  border-radius: 10px;
+  padding: 30px;
+  width: 280px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.feature-card h3 {
+  font-size: 20px;
+  color: #0d47a1;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-size: 16px;
+  color: #333;
+}
+.feature-card {
+  background-color: #e3f2fd;
+  border-radius: 10px;
+  padding: 30px;
+  width: 280px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  cursor: pointer; /* 👈 tıklanabilir görünüm */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }

@@ -19,7 +19,7 @@ const ImageSlider = () => {
   };
 
   useEffect(() => {
-    const interval = setInterval(goToNext, 4000);
+    const interval = setInterval(goToNext, 9000);
     return () => clearInterval(interval);
   }, []);
 
