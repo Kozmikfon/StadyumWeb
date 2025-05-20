@@ -1,7 +1,5 @@
-/* PlayerProfilePage.css */
-
 .profile-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 40px auto;
   background-color: #ffffff;
   padding: 30px;
@@ -27,17 +25,55 @@
   color: #2c3e50;
 }
 
-@media (max-width: 600px) {
-  .profile-container {
-    margin: 20px;
-    padding: 20px;
-  }
+.leave-btn,
+.join-btn {
+  background-color: #d32f2f;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  margin: 20px 0;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-  .profile-container h2 {
-    font-size: 24px;
-  }
+.join-btn {
+  background-color: #2e7d32;
+}
 
-  .profile-container p {
-    font-size: 16px;
-  }
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.button-group button {
+  background-color: #1976d2;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 160px;
+}
+
+.stats-card {
+  background-color: #f1f8e9;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.stats-card h3 {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 40px;
 }

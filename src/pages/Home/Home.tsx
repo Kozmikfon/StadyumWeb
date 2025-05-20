@@ -55,6 +55,11 @@ const Home = () => {
       .finally(() => setIsLoadingPlayers(false));
   }, []);
 
+const handleLogout = () => {
+  localStorage.removeItem('token');
+  window.location.href = '/login'; // logout sonrası login sayfasına yönlendir
+};
+
   return (
     <>
       {/* Navbar */}
@@ -71,6 +76,9 @@ const Home = () => {
           <button className="profile-btn" onClick={() => navigate('/profile')}>
             👤 Profil
           </button>
+          <button className="logout-btn" onClick={handleLogout}>
+    🚪 Çıkış Yap
+  </button>
         </div>
       </header>
 
