@@ -33,40 +33,40 @@ const TeamList = () => {
   const [teamIdForCaptainChange, setTeamIdForCaptainChange] = useState<number | null>(null);
 
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
+const fetchData = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-      const decoded: any = jwtDecode(token);
-      const userId = decoded?.userId;
+    const decoded: any = jwtDecode(token);
+    const userId = decoded?.userId;
 
-      const playerRes = await axios.get(`http://localhost:5275/api/players/byUser/${userId}`);
-      const fetchedPlayerId = playerRes.data.id;
-      const fetchedTeamId = playerRes.data.teamId || null;
-      setPlayerId(fetchedPlayerId);
-      setCurrentTeamId(fetchedTeamId);
+    const playerRes = await axios.get(`http://localhost:5275/api/players/byUser/${userId}`);
+    const fetchedPlayerId = playerRes.data.id;
+    const fetchedTeamId = playerRes.data.teamId || null;
+    setPlayerId(fetchedPlayerId);
+    setCurrentTeamId(fetchedTeamId);
 
-      const teamsRes = await axios.get('http://localhost:5275/api/Teams');
-      setTeams(teamsRes.data);
+    const teamsRes = await axios.get('http://localhost:5275/api/Teams');
+    setTeams(teamsRes.data);
 
-      if (fetchedTeamId) {
-        const matchCheck = await axios.get(
-          `http://localhost:5275/api/Players/${fetchedPlayerId}/upcoming-matches`
-        );
+    if (fetchedTeamId) {
+      const matchCheck = await axios.get(
+        `http://localhost:5275/api/Players/${fetchedPlayerId}/upcoming-matches`
+      );
 
-        if (matchCheck.data && matchCheck.data.length > 0) {
-          setHasRecentMatch(true);
-        }
+      if (matchCheck.data && matchCheck.data.length > 0) {
+        setHasRecentMatch(true);
       }
-    } catch (error) {
-      console.error("Veriler alınamadı:", error);
     }
-  };
-
+  } catch (error) {
+    console.error("Veriler alınamadı:", error);
+  }
+};
+useEffect(() => {
   fetchData();
 }, []);
+
 
 
   const handleJoin = async (teamId: number) => {
@@ -184,34 +184,50 @@ const handleLeaveTeam = async () => {
 //kaptan atama
 const assignNewCaptain = async () => {
   if (!selectedCaptainId || !teamIdForCaptainChange) {
-    alert("Yeni kaptan seçilmedi.");
+    alert("⚠️ Lütfen yeni kaptanı seçin.");
     return;
   }
 
   try {
     const token = localStorage.getItem("token");
+    if (!token) {
+      alert("🔒 Giriş yapılmamış. Tekrar giriş yapın.");
+      return;
+    }
+
+    // Yeni kaptanı ata
     await axios.put(
       `http://localhost:5275/api/Teams/assign-captain`,
       {
         teamId: teamIdForCaptainChange,
-        newCaptainId: selectedCaptainId
+        newCaptainId: selectedCaptainId,
       },
       {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 
-    alert("✅ Yeni kaptan atandı. Şimdi takımdan ayrılabilirsiniz.");
-    setShowCaptainModal(false);
+    alert("✅ Yeni kaptan başarıyla atandı. Takım verileri güncelleniyor...");
 
-    // Ardından takımdan ayrılma işlemi
+    // Takım verilerini güncelle (en yeni kaptanı çek)
+    await fetchData();
+
+    // Modal kapat ve state'leri sıfırla
+    setShowCaptainModal(false);
+    setSelectedCaptainId(null);
+    setTeamIdForCaptainChange(null);
+
+    // Ayrılma işlemini yeniden başlat
     await handleLeaveTeam();
 
-  } catch (error) {
-    console.error("Yeni kaptan atanamadı:", error);
-    alert("❌ Yeni kaptan atanamadı.");
+  } catch (error: any) {
+    console.error("❌ Yeni kaptan atanamadı:", error);
+    const message = error?.response?.data || "Bir hata oluştu.";
+    alert(`❌ ${message}`);
   }
 };
+
+
 
 
 
