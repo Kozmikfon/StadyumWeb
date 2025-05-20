@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Yönlendirme için ekledik
 import './ImageSlider.css';
 
 import slide1 from '../assets/slider/top1.jpg';
@@ -9,6 +10,7 @@ const images = [slide1, slide2, slide3];
 
 const ImageSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate(); // Kullanıcıyı yönlendirmek için
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -25,25 +27,26 @@ const ImageSlider = () => {
 
   return (
     <div className="slider-container">
-  {images.map((img, index) => (
-    <img
-      key={index}
-      src={img}
-      alt={`slide-${index}`}
-      className={`slider-image ${index === currentIndex ? 'active' : ''}`}
-    />
-  ))}
+      {images.map((img, index) => (
+        <img
+          key={index}
+          src={img}
+          alt={`slide-${index}`}
+          className={`slider-image ${index === currentIndex ? 'active' : ''}`}
+        />
+      ))}
 
-  <div className="slider-overlay">
-    <h1>HALI SAHA & SOSYAL TESİSLER</h1>
-    <p>14-16 Yaş Turnuvamız Yakında Başlıyor</p>
-    <button className="slider-button">BİLGİ ALIN</button>
-  </div>
+      <div className="slider-overlay">
+        <h1>HALI SAHA & SOSYAL TESİSLER</h1>
+        <p>14-16 Yaş Turnuvamız Yakında Başlıyor</p>
+        <button className="slider-button" onClick={() => navigate('/turnuva')}>
+          TURNUVAYA BAŞLA
+        </button>
+      </div>
 
-  <button className="nav-button left" onClick={goToPrevious}>❮</button>
-  <button className="nav-button right" onClick={goToNext}>❯</button>
-</div>
-
+      <button className="nav-button left" onClick={goToPrevious}>❮</button>
+      <button className="nav-button right" onClick={goToNext}>❯</button>
+    </div>
   );
 };
 

@@ -1,19 +1,22 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import Login from '../Login/Login';
-import Register from '../Register/Register';
-import PlayerList from '../Player/PlayerList/PlayerList';
-import PlayerDetailPage from '../Player/PlayerDetailPage';
-import TeamList from '../Teams/TeamList/TeamList';
-import TeamDetailPage from '../Teams/TeamDetail/TeamDetailPage';
-import MatchList from '../Matches/MatchList/MatchList';
-import MatchDetailPage from '../Matches/MatchDetailPage';
-import PlayerProfile from '../Profile/PlayerProfile';
-import ChangePasswordPage from '../Profile/ChangePassword/ChangePasswordPage';
-import CreateMatch from '../Matches/CreateMatch/CreateMatch';
-import Dashboard from '../Dashboard/Dashboard';
-import Home from '../Home/Home';
+import Login from '../pages/Login/Login';
+import Register from '../pages/Register/Register';
+import Home from '../pages/Home/Home';
+import Dashboard from '../pages/Dashboard/Dashboard';
+import PlayerList from '../pages/Player/PlayerList/PlayerList';
+import PlayerDetailPage from '../pages/Player/PlayerDetailPage';
+import TeamList from '../pages/Teams/TeamList/TeamList';
+import TeamDetailPage from '../pages/Teams/TeamDetail/TeamDetailPage';
+import MatchList from '../pages/Matches/MatchList/MatchList';
+import MatchDetailPage from '../pages/Matches/MatchDetailPage';
+import CreateMatch from '../pages/Matches/CreateMatch/CreateMatch';
+import PlayerProfile from '../pages/Profile/PlayerProfile';
+import ChangePasswordPage from '../pages/Profile/ChangePassword/ChangePasswordPage';
+import Navbar from './Navbar/Navbar';
+import TurnuvaPage from '../pages/Turnuva/TurnuvaPage';
+
 
 
 
@@ -52,6 +55,8 @@ const AnimatedRoutes = () => {
   );
 
   return (
+  <>
+    {token && <Navbar />} {/* Navbar sadece login olmuş kullanıcılar için */}
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         {!token ? (
@@ -73,13 +78,15 @@ const AnimatedRoutes = () => {
             <Route path="/matches/create" element={motionWrap(<CreateMatch />)} />
             <Route path="/profile" element={motionWrap(<PlayerProfile />)} />
             <Route path="/change-password" element={motionWrap(<ChangePasswordPage />)} />
-           
+            <Route path="/Turnuva" element={motionWrap(<TurnuvaPage />)} />
             <Route path="*" element={<Navigate to="/" />} />
           </>
         )}
       </Routes>
     </AnimatePresence>
-  );
+  </>
+);
+
 };
 
 export default AnimatedRoutes;

@@ -49,14 +49,17 @@ const CreateMatch = () => {
   };
 
   return (
-    <div className="create-match-container">
-      <h2>Yeni Maç Oluştur</h2>
+  <div className="create-match-container">
+    <div className="form-box">
+      <h2>⚽ Yeni Maç Oluştur</h2>
+      <p>Lütfen saha adını, tarihini ve rakip takımı seçin.</p>
       <form onSubmit={handleSubmit} className="match-form">
         <label>Saha Adı</label>
         <input
           type="text"
           value={fieldName}
           onChange={(e) => setFieldName(e.target.value)}
+          placeholder="Örn: Çamlık Halı Saha"
           required
         />
 
@@ -69,8 +72,12 @@ const CreateMatch = () => {
         />
 
         <label>Rakip Takım</label>
-        <select onChange={(e) => setTeam2Id(Number(e.target.value))} required>
-          <option value="">Takım Seç</option>
+        <select
+          onChange={(e) => setTeam2Id(Number(e.target.value))}
+          required
+          defaultValue=""
+        >
+          <option value="" disabled>Takım Seç</option>
           {teams.map((team) => (
             <option key={team.id} value={team.id}>
               {team.name}
@@ -78,10 +85,12 @@ const CreateMatch = () => {
           ))}
         </select>
 
-        <button type="submit">Oluştur</button>
+        <button type="submit" className="create-btn">Maçı Oluştur</button>
       </form>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default CreateMatch;

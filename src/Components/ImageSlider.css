@@ -87,3 +87,18 @@
 .nav-button.right {
   right: 10px;
 }
+.slider-button {
+  background-color: #ff9800;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.slider-button:hover {
+  background-color: #f57c00;
+}
