@@ -17,34 +17,51 @@ interface Team {
   players: Player[];
 }
 
+
 const TeamList = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [playerId, setPlayerId] = useState<number | null>(null);
   const [currentTeamId, setCurrentTeamId] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [newTeamName, setNewTeamName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [hasRecentMatch, setHasRecentMatch] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-        const decoded: any = jwtDecode(token);
-        const userId = decoded?.userId;
+      const decoded: any = jwtDecode(token);
+      const userId = decoded?.userId;
 
-        const playerRes = await axios.get(`http://localhost:5275/api/players/byUser/${userId}`);
-        const fetchedPlayerId = playerRes.data.id;
-        setPlayerId(fetchedPlayerId);
-        setCurrentTeamId(playerRes.data.teamId || null);
+      const playerRes = await axios.get(`http://localhost:5275/api/players/byUser/${userId}`);
+      const fetchedPlayerId = playerRes.data.id;
+      const fetchedTeamId = playerRes.data.teamId || null;
+      setPlayerId(fetchedPlayerId);
+      setCurrentTeamId(fetchedTeamId);
 
-        const teamsRes = await axios.get('http://localhost:5275/api/Teams');
-        setTeams(teamsRes.data);
-      } catch (error) {
-        console.error("Veriler alınamadı:", error);
+      const teamsRes = await axios.get('http://localhost:5275/api/Teams');
+      setTeams(teamsRes.data);
+
+      if (fetchedTeamId) {
+        const matchCheck = await axios.get(
+          `http://localhost:5275/api/Players/${fetchedPlayerId}/upcoming-matches`
+        );
+
+        if (matchCheck.data && matchCheck.data.length > 0) {
+          setHasRecentMatch(true);
+        }
       }
-    };
+    } catch (error) {
+      console.error("Veriler alınamadı:", error);
+    }
+  };
 
-    fetchData();
-  }, []);
+  fetchData();
+}, []);
+
 
   const handleJoin = async (teamId: number) => {
     const token = localStorage.getItem('token');
@@ -70,33 +87,155 @@ const TeamList = () => {
     }
   };
 
+  const handleCreateTeam = async () => {
+  if (!newTeamName.trim()) {
+    alert("Takım adı boş olamaz.");
+    return;
+  }
+
+  // 🔒 EK KONTROL BURAYA:
+  if (currentTeamId) {
+    alert("Zaten bir takıma aitsiniz. Önce ayrılmanız gerekir.");
+    return;
+  }
+
+  if (hasRecentMatch) {
+    alert("Takımınızın son 12 saatte maçı olduğu için yeni takım oluşturamazsınız.");
+    return;
+  }
+
+  const token = localStorage.getItem('token');
+  if (!token || playerId === null) {
+    alert("Giriş yapılmalı.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    const res = await axios.post(
+      'http://localhost:5275/api/Teams',
+      { name: newTeamName, captainId: playerId },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    alert("✅ Takım başarıyla oluşturuldu!");
+    setTeams(prev => [...prev, res.data]); // Listeye ekle
+    setNewTeamName('');
+    setShowModal(false);
+  } catch (err) {
+    console.error("Takım oluşturulamadı:", err);
+    alert("Bir hata oluştu.");
+  } finally {
+    setLoading(false);
+  }
+};
+const handleLeaveTeam = async () => {
+  const token = localStorage.getItem('token');
+  if (!token || !playerId) {
+    alert("🔒 Giriş yapılmamış veya oyuncu bilgisi eksik.");
+    return;
+  }
+
+  const confirmLeave = window.confirm("Takımdan ayrılmak istediğinize emin misiniz?");
+  if (!confirmLeave) return;
+
+  try {
+    await axios.delete(`http://localhost:5275/api/TeamMembers/leave/${playerId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    alert("✅ Takımdan başarıyla ayrıldınız!");
+    window.location.reload();
+
+  } catch (err: any) {
+    if (axios.isAxiosError(err) && err.response?.status === 400) {
+      alert(`⚠️ ${err.response.data}`);
+    } else {
+      console.error("Ayrılma hatası:", err);
+      alert("❌ Takımdan ayrılamadınız. Daha sonra tekrar deneyin.");
+    }
+  }
+};
+
+
   return (
-    <div className="team-page">
-      <h2>Takımlar</h2>
-      <div className="team-grid">
-        {teams.map((team) => {
-          const isPlayerInTeam = team.players.some(p => p.id === playerId);
+  <div className="team-page">
+    <h2>Takımlar</h2>
 
-          return (
-            <div className="team-card" key={team.id}>
-              <div className="team-icon">{team.name[0]}</div>
-              <h3>{team.name}</h3>
-              <p>🧑‍✈️ Kaptan: {team.captain?.firstName || 'Belirlenmemiş'}</p>
-              <p>👥 Oyuncular: {team.players.length}</p>
+    <button
+      className="create-team-btn"
+      onClick={() => setShowModal(true)}
+      disabled={!!currentTeamId || hasRecentMatch}
+      title={
+        hasRecentMatch
+          ? "Takımınızın maçı olduğu için yeni takım oluşturamazsınız."
+          : currentTeamId
+          ? "Zaten bir takımdasınız. Önce ayrılmalısınız."
+          : ""
+      }
+    >
+      + Yeni Takım Oluştur
+    </button>
 
-              {isPlayerInTeam ? (
-                <button className="joined-btn" disabled>Katıldınız</button>
-              ) : (
-                <button className="join-btn" onClick={() => handleJoin(team.id)}>Takıma Katıl</button>
-              )}
+    {(!!currentTeamId || hasRecentMatch) && (
+      <p className="warning-msg">
+        {hasRecentMatch
+          ? "⛔ Takımınızın son 12 saatte maçı olduğu için yeni takım oluşturamazsınız."
+          : "⚠️ Zaten bir takıma aitsiniz. Yeni takım kurmak için önce ayrılmalısınız."}
+      </p>
+    )}
 
-              <Link to={`/teams/${team.id}`} className="detail-link">Detay</Link>
-            </div>
-          );
-        })}
-      </div>
+    <div className="team-grid">
+      {teams.map((team) => {
+        const isPlayerInTeam = team.players.some(p => p.id === playerId);
+
+        return (
+          <div className="team-card" key={team.id}>
+            <div className="team-icon">{team.name[0]}</div>
+            <h3>{team.name}</h3>
+            <p>🧑‍✈️ Kaptan: {team.captain?.firstName || 'Belirlenmemiş'}</p>
+            <p>👥 Oyuncular: {team.players.length}</p>
+
+            {isPlayerInTeam ? (
+  <>
+    <button className="joined-btn" disabled>Katıldınız</button>
+    {team.id === currentTeamId && (
+      <button className="leave-btn" onClick={handleLeaveTeam}>Takımdan Ayrıl</button>
+    )}
+  </>
+) : (
+  <button className="join-btn" onClick={() => handleJoin(team.id)}>Takıma Katıl</button>
+)}
+
+
+            <Link to={`/teams/${team.id}`} className="detail-link">Detay</Link>
+          </div>
+        );
+      })}
     </div>
-  );
+
+    {showModal && (
+      <div className="modal-overlay">
+        <div className="modal">
+          <h3>Yeni Takım Oluştur</h3>
+          <input
+            type="text"
+            value={newTeamName}
+            onChange={(e) => setNewTeamName(e.target.value)}
+            placeholder="Takım adı giriniz"
+          />
+          <div className="modal-buttons">
+            <button onClick={handleCreateTeam} disabled={loading}>
+              {loading ? "Oluşturuluyor..." : "Oluştur"}
+            </button>
+            <button onClick={() => setShowModal(false)}>İptal</button>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
 };
 
 export default TeamList;

@@ -68,48 +68,55 @@ const PlayerProfilePage = () => {
   }, [player]);
 
   const handleLeaveTeam = async () => {
-    const token = localStorage.getItem('token');
-    if (!token || !player?.id) {
-      alert('🔒 Giriş yapılmamış veya oyuncu bilgisi eksik.');
+  const token = localStorage.getItem('token');
+  if (!token || !player?.id) {
+    alert('🔒 Giriş yapılmamış veya oyuncu bilgisi eksik.');
+    return;
+  }
+
+  const confirmLeave = window.confirm("Takımdan ayrılmak istediğinize emin misiniz?");
+  if (!confirmLeave) return;
+
+  try {
+    await axios.delete(`http://localhost:5275/api/TeamMembers/leave/${player.id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    alert("✅ Takımdan başarıyla ayrıldınız!");
+    window.location.reload();
+
+  } catch (leaveError: any) {
+    // ✅ 400 Bad Request kontrolü: kaptan kontrolü veya özel hata
+    if (axios.isAxiosError(leaveError) && leaveError.response?.status === 400) {
+      alert(`⚠️ ${leaveError.response.data}`);
       return;
     }
 
-    const confirmLeave = window.confirm("Takımdan ayrılmak istediğinize emin misiniz?");
-    if (!confirmLeave) return;
+    console.warn("leave/{playerId} başarısız oldu, fallback yönteme geçiliyor...", leaveError);
 
     try {
-      await axios.delete(`http://localhost:5275/api/TeamMembers/leave/${player.id}`, {
+      const memberRes = await axios.get('http://localhost:5275/api/TeamMembers');
+      const membership = memberRes.data.find((m: any) => m.playerId === player.id);
+
+      if (!membership) {
+        alert('❌ Takım üyeliği bulunamadı.');
+        return;
+      }
+
+      await axios.delete(`http://localhost:5275/api/TeamMembers/${membership.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      alert("✅ Takımdan başarıyla ayrıldınız!");
+      alert("✅ Takımdan ayrıldınız (alternatif yöntem).");
       window.location.reload();
 
-    } catch (leaveError) {
-      console.warn("leave/{playerId} başarısız oldu, fallback yönteme geçiliyor...", leaveError);
-
-      try {
-        const memberRes = await axios.get('http://localhost:5275/api/TeamMembers');
-        const membership = memberRes.data.find((m: any) => m.playerId === player.id);
-
-        if (!membership) {
-          alert('❌ Takım üyeliği bulunamadı.');
-          return;
-        }
-
-        await axios.delete(`http://localhost:5275/api/TeamMembers/${membership.id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        alert("✅ Takımdan ayrıldınız (alternatif yöntem).");
-        window.location.reload();
-
-      } catch (fallbackError) {
-        console.error("❌ Her iki yöntem de başarısız:", fallbackError);
-        alert("⚠️ Takımdan ayrılamadınız. Lütfen daha sonra tekrar deneyin.");
-      }
+    } catch (fallbackError) {
+      console.error("❌ Her iki yöntem de başarısız:", fallbackError);
+      alert("⚠️ Takımdan ayrılamadınız. Lütfen daha sonra tekrar deneyin.");
     }
-  };
+  }
+};
+
 
   if (loading || !player) return <p className="loading">Yükleniyor...</p>;
 

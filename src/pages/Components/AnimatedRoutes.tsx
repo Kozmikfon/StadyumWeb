@@ -16,6 +16,7 @@ import Dashboard from '../Dashboard/Dashboard';
 import Home from '../Home/Home';
 
 
+
 const AnimatedRoutes = () => {
   const location = useLocation();
   const [token, setToken] = useState<string | null>(null);
@@ -72,6 +73,7 @@ const AnimatedRoutes = () => {
             <Route path="/matches/create" element={motionWrap(<CreateMatch />)} />
             <Route path="/profile" element={motionWrap(<PlayerProfile />)} />
             <Route path="/change-password" element={motionWrap(<ChangePasswordPage />)} />
+           
             <Route path="*" element={<Navigate to="/" />} />
           </>
         )}
