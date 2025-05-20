@@ -77,3 +77,16 @@
   font-size: 18px;
   margin-top: 40px;
 }
+.password-btn {
+  background-color: #607d8b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.password-btn:hover {
+  background-color: #455a64;
+}

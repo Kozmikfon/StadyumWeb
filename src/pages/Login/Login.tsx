@@ -3,29 +3,38 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './login.css';
 
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    try {
-      const res = await axios.post('http://localhost:5275/api/Auth/login', {
-        email,
-        password,
-      });
+  try {
+    const res = await axios.post('http://localhost:5275/api/Auth/login', {
+      email,
+      password,
+    });
 
-      const { token, role } = res.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', role);
+    const { token, role } = res.data;
 
-      // 🔁 Admin ise dashboard'a, değilse ana sayfaya yönlendir
-      navigate(role === 'Admin' ? '/dashboard' : '/');
-    } catch (err) {
-      console.error(err);
-      alert('Giriş başarısız! Email veya şifre yanlış.');
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', role);
+
+    // 🧠 Eğer token varsa ve rol admin ise => dashboard
+    // değilse => anasayfa
+    if (role === 'Admin') {
+      navigate('/dashboard');
+    } else {
+      navigate('/');
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert('Giriş başarısız! Email veya şifre yanlış.');
+  }
+};
+
+
 
   return (
     <div className="login-container">

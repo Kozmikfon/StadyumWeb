@@ -137,6 +137,9 @@ const PlayerProfilePage = () => {
         <button onClick={() => navigate('/profile/edit')}>🛠 Profilimi Düzenle</button>
         <button onClick={() => navigate('/reviews')}>💬 Yorumlarım</button>
       </div>
+<button onClick={() => navigate('/change-password')} className="password-btn">
+  🔐 Şifremi Değiştir
+</button>
 
       {stats && (
         <div className="stats-card">
