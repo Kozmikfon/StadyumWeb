@@ -27,6 +27,12 @@ const TeamList = () => {
   const [loading, setLoading] = useState(false);
   const [hasRecentMatch, setHasRecentMatch] = useState(false);
 
+  const [showCaptainModal, setShowCaptainModal] = useState(false);
+  const [teamPlayers, setTeamPlayers] = useState<Player[]>([]);
+  const [selectedCaptainId, setSelectedCaptainId] = useState<number | null>(null);
+  const [teamIdForCaptainChange, setTeamIdForCaptainChange] = useState<number | null>(null);
+
+
 useEffect(() => {
   const fetchData = async () => {
     try {
@@ -148,14 +154,66 @@ const handleLeaveTeam = async () => {
     window.location.reload();
 
   } catch (err: any) {
+    // 👇 Kaptan kontrolü: "kaptan" kelimesi içeren hata
     if (axios.isAxiosError(err) && err.response?.status === 400) {
-      alert(`⚠️ ${err.response.data}`);
+      const message = err.response.data;
+
+      if (message.toLowerCase().includes("kaptan")) {
+        alert("⚠️ Kaptansınız ve ayrılmadan önce yeni bir kaptan seçmelisiniz.");
+
+        // Eğer kaptansa ve takım datası hazırsa modalı tetikle
+        const team = teams.find(t => t.id === currentTeamId);
+        if (team) {
+          const otherPlayers = team.players.filter(p => p.id !== playerId);
+          setTeamPlayers(otherPlayers);
+          setTeamIdForCaptainChange(team.id);
+          setShowCaptainModal(true); // modal tetiklenir
+        }
+
+        return;
+      }
+
+      alert(`⚠️ ${message}`);
     } else {
       console.error("Ayrılma hatası:", err);
       alert("❌ Takımdan ayrılamadınız. Daha sonra tekrar deneyin.");
     }
   }
 };
+
+//kaptan atama
+const assignNewCaptain = async () => {
+  if (!selectedCaptainId || !teamIdForCaptainChange) {
+    alert("Yeni kaptan seçilmedi.");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("token");
+    await axios.put(
+      `http://localhost:5275/api/Teams/assign-captain`,
+      {
+        teamId: teamIdForCaptainChange,
+        newCaptainId: selectedCaptainId
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+    alert("✅ Yeni kaptan atandı. Şimdi takımdan ayrılabilirsiniz.");
+    setShowCaptainModal(false);
+
+    // Ardından takımdan ayrılma işlemi
+    await handleLeaveTeam();
+
+  } catch (error) {
+    console.error("Yeni kaptan atanamadı:", error);
+    alert("❌ Yeni kaptan atanamadı.");
+  }
+};
+
+
 
 
   return (
@@ -197,16 +255,15 @@ const handleLeaveTeam = async () => {
             <p>👥 Oyuncular: {team.players.length}</p>
 
             {isPlayerInTeam ? (
-  <>
-    <button className="joined-btn" disabled>Katıldınız</button>
-    {team.id === currentTeamId && (
-      <button className="leave-btn" onClick={handleLeaveTeam}>Takımdan Ayrıl</button>
-    )}
-  </>
-) : (
-  <button className="join-btn" onClick={() => handleJoin(team.id)}>Takıma Katıl</button>
-)}
-
+              <>
+                <button className="joined-btn" disabled>Katıldınız</button>
+                {team.id === currentTeamId && (
+                  <button className="leave-btn" onClick={handleLeaveTeam}>Takımdan Ayrıl</button>
+                )}
+              </>
+            ) : (
+              <button className="join-btn" onClick={() => handleJoin(team.id)}>Takıma Katıl</button>
+            )}
 
             <Link to={`/teams/${team.id}`} className="detail-link">Detay</Link>
           </div>
@@ -214,6 +271,7 @@ const handleLeaveTeam = async () => {
       })}
     </div>
 
+    {/* Takım Oluşturma Modalı */}
     {showModal && (
       <div className="modal-overlay">
         <div className="modal">
@@ -233,8 +291,33 @@ const handleLeaveTeam = async () => {
         </div>
       </div>
     )}
+
+    {/* Kaptan Seçme Modalı */}
+    {showCaptainModal && (
+      <div className="modal-overlay">
+        <div className="modal">
+          <h3>Yeni Kaptanı Seçin</h3>
+          <select
+            value={selectedCaptainId || ''}
+            onChange={(e) => setSelectedCaptainId(Number(e.target.value))}
+          >
+            <option value="">Kaptan seçin</option>
+            {teamPlayers.map(player => (
+              <option key={player.id} value={player.id}>
+                {player.firstName} {player.lastName}
+              </option>
+            ))}
+          </select>
+          <div className="modal-buttons">
+            <button onClick={assignNewCaptain}>Onayla</button>
+            <button onClick={() => setShowCaptainModal(false)}>İptal</button>
+          </div>
+        </div>
+      </div>
+    )}
   </div>
 );
+
 
 };
 
