@@ -5,6 +5,7 @@ import axios from 'axios';
 import './TurnuvaPage.css';
 import CreateTeamModal from '../../Components/modals/CreateTeamModal'; // yolunu kendi dizinine göre ayarla
 import JoinTeamModal from '../../Components/modals/JoinTeamModal';
+import LeaveTeamModal from '../../Components/modals/LeaveTeamModal';
 
 interface Team {
   id: number;
@@ -27,6 +28,8 @@ const TurnuvaPage = () => {
   const [playerId, setPlayerId] = useState<number | null>(null);
   const [showJoinTeamModal, setShowJoinTeamModal] = useState(false);
   const [currentTeamId, setCurrentTeamId] = useState<number | null>(null);
+  const [showLeaveTeamModal, setShowLeaveTeamModal] = useState(false);
+
 
   const fetchData = async () => {
     const token = localStorage.getItem('token');
@@ -64,6 +67,12 @@ const TurnuvaPage = () => {
         <button className="info-btn" onClick={() => setShowModal(true)}>📩 Bilgi Al / Başvur</button>
         <button className="info-btn" onClick={() => setShowCreateTeamModal(true)}>🛡 Takım Oluştur</button>
         <button className="info-btn" onClick={() => setShowJoinTeamModal(true)}>👥 Takıma Katıl</button>
+        {currentTeamId && (
+  <button className="info-btn" onClick={() => setShowLeaveTeamModal(true)}>
+    🚪 Takımdan Ayrıl
+  </button>
+)}
+
       </div>
 
       {/* TAKIMLAR */}
@@ -126,6 +135,14 @@ const TurnuvaPage = () => {
         onTeamJoined={fetchData}
   />
 )}
+        {showLeaveTeamModal && playerId !== null && (
+  <LeaveTeamModal
+    playerId={playerId}
+    onClose={() => setShowLeaveTeamModal(false)}
+    onTeamLeft={fetchData}
+  />
+)}
+
 
     </div>
   );
