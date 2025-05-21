@@ -142,3 +142,21 @@ li {
   align-items: center;
   justify-content: center;
 }
+.standings-table {
+  width: 100%;
+  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-collapse: collapse;
+  color: white;
+  text-align: center;
+}
+
+.standings-table th, .standings-table td {
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.standings-table thead {
+  background: rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+}

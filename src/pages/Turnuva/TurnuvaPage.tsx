@@ -19,6 +19,15 @@ interface Match {
   team1: Team;
   team2: Team;
 }
+interface Standing {
+  teamId: number;
+  teamName: string;
+  played: number;
+  won: number;
+  draw: number;
+  lost: number;
+  points: number;
+}
 
 const TurnuvaPage = () => {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -29,6 +38,7 @@ const TurnuvaPage = () => {
   const [showJoinTeamModal, setShowJoinTeamModal] = useState(false);
   const [currentTeamId, setCurrentTeamId] = useState<number | null>(null);
   const [showLeaveTeamModal, setShowLeaveTeamModal] = useState(false);
+  const [standings, setStandings] = useState<Standing[]>([]);
 
 
   const fetchData = async () => {
@@ -45,10 +55,61 @@ const TurnuvaPage = () => {
 
       const matchRes = await axios.get('http://localhost:5275/api/Matches', config);
       setMatches(matchRes.data);
+      calculateStandings(matchRes.data);
     } catch (err) {
       console.error("Veri alınırken hata:", err);
     }
   };
+  const calculateStandings = (matchList: Match[]) => {
+  const table: { [teamId: number]: Standing } = {};
+
+  matchList.forEach(match => {
+    const team1Id = match.team1.id;
+    const team2Id = match.team2.id;
+
+    // Rastgele skor verelim (şimdilik, backend skor tutmuyorsa)
+    const team1Score = Math.floor(Math.random() * 4);
+    const team2Score = Math.floor(Math.random() * 4);
+
+    [team1Id, team2Id].forEach(teamId => {
+      if (!table[teamId]) {
+        const team = teamId === team1Id ? match.team1 : match.team2;
+        table[teamId] = {
+          teamId,
+          teamName: team.name,
+          played: 0,
+          won: 0,
+          draw: 0,
+          lost: 0,
+          points: 0,
+        };
+      }
+    });
+
+    table[team1Id].played += 1;
+    table[team2Id].played += 1;
+
+    if (team1Score > team2Score) {
+      table[team1Id].won += 1;
+      table[team2Id].lost += 1;
+      table[team1Id].points += 3;
+    } else if (team1Score < team2Score) {
+      table[team2Id].won += 1;
+      table[team1Id].lost += 1;
+      table[team2Id].points += 3;
+    } else {
+      table[team1Id].draw += 1;
+      table[team2Id].draw += 1;
+      table[team1Id].points += 1;
+      table[team2Id].points += 1;
+    }
+  });
+
+  const sorted = Object.values(table).sort((a, b) => b.points - a.points);
+  setStandings(sorted);
+};
+
+  
 
   useEffect(() => {
     fetchData();
@@ -142,6 +203,35 @@ const TurnuvaPage = () => {
     onTeamLeft={fetchData}
   />
 )}
+<section>
+  <h3>🏅 Puan Durumu</h3>
+  <table className="standings-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Takım</th>
+        <th>O</th>
+        <th>G</th>
+        <th>B</th>
+        <th>M</th>
+        <th>Puan</th>
+      </tr>
+    </thead>
+    <tbody>
+      {standings.map((team, index) => (
+        <tr key={team.teamId}>
+          <td>{index + 1}</td>
+          <td>{team.teamName}</td>
+          <td>{team.played}</td>
+          <td>{team.won}</td>
+          <td>{team.draw}</td>
+          <td>{team.lost}</td>
+          <td>{team.points}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>
 
 
     </div>
