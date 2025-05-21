@@ -46,7 +46,16 @@ const PlayerList = () => {
             <p><strong>Yetenek:</strong> {player.skillLevel}</p>
             <p><strong>Puan:</strong> {player.rating}</p>
             <p><strong>Takım:</strong> {player.teamName || 'Yok'}</p>
-            <Link to={`/players/${player.id}`} className="detail-link">Detay</Link>
+
+            <div className="player-actions">
+              <Link to={`/players/${player.id}`} className="detail-link">
+                Detay
+              </Link>
+
+              <Link to={`/send-offer?receiverId=${player.id}`}>
+                <button className="btn-green">➕ Oyuncuya Teklif Gönder</button>
+              </Link>
+            </div>
           </div>
         ))}
       </div>

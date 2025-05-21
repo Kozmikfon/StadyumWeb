@@ -16,6 +16,7 @@ import PlayerProfile from '../pages/Profile/PlayerProfile';
 import ChangePasswordPage from '../pages/Profile/ChangePassword/ChangePasswordPage';
 import Navbar from './Navbar/Navbar';
 import TurnuvaPage from '../pages/Turnuva/TurnuvaPage';
+import SendOfferPage from '../pages/Sender/SendOfferPage';
 
 
 
@@ -74,11 +75,13 @@ const AnimatedRoutes = () => {
             <Route path="/teams" element={motionWrap(<TeamList />)} />
             <Route path="/teams/:id" element={motionWrap(<TeamDetailPage />)} />
             <Route path="/matches" element={motionWrap(<MatchList />)} />
-            <Route path="/matches/:id" element={motionWrap(<MatchDetailPage />)} />
+            <Route path="/matches/:matchId" element={motionWrap(<MatchDetailPage />)} />
             <Route path="/matches/create" element={motionWrap(<CreateMatch />)} />
             <Route path="/profile" element={motionWrap(<PlayerProfile />)} />
             <Route path="/change-password" element={motionWrap(<ChangePasswordPage />)} />
             <Route path="/Turnuva" element={motionWrap(<TurnuvaPage />)} />
+            <Route path="/send-offer" element={motionWrap(<SendOfferPage />)} />
+            <Route path="/send-offer/:receiverId" element={motionWrap(<SendOfferPage />)} />
             <Route path="*" element={<Navigate to="/" />} />
           </>
         )}

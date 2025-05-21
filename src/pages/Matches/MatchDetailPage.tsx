@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import './MatchDetailPage.css';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import './MatchDetailPage.css';
 
 interface Offer {
   id: number;
   senderId: number;
   receiverId: number;
-   matchId: number;
+  matchId: number;
   receiverName?: string;
   status: string;
 }
@@ -30,7 +30,8 @@ interface PlayerStats {
 }
 
 const MatchDetailPage = () => {
-  const { matchId } = useParams();
+  const { matchId } = useParams<{ matchId: string }>();
+  const navigate = useNavigate();
   const [match, setMatch] = useState<Match | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [acceptedOffers, setAcceptedOffers] = useState<Offer[]>([]);
@@ -39,25 +40,34 @@ const MatchDetailPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!matchId) {
+        console.error("❌ matchId URL'den alınamadı.");
+        return;
+      }
+
       const token = localStorage.getItem('token');
       const decoded: any = jwtDecode(token || '');
       setPlayerId(decoded.playerId);
 
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      const [matchRes, offersRes, acceptedRes] = await Promise.all([
-        axios.get(`http://localhost:5275/api/Matches/${matchId}`, config),
-        axios.get(`http://localhost:5275/api/Offers`, config),
-        axios.get(`http://localhost:5275/api/Offers/accepted-by-match/${matchId}`, config),
-      ]);
+      try {
+        const [matchRes, offersRes, acceptedRes] = await Promise.all([
+          axios.get(`http://localhost:5275/api/Matches/${matchId}`, config),
+          axios.get(`http://localhost:5275/api/Offers`, config),
+          axios.get(`http://localhost:5275/api/Offers/accepted-by-match/${matchId}`, config),
+        ]);
 
-      setMatch(matchRes.data);
-      setOffers(offersRes.data.filter((o: Offer) => o.matchId === Number(matchId) ));
-      setAcceptedOffers(acceptedRes.data);
+        setMatch(matchRes.data);
+        setOffers(offersRes.data.filter((o: Offer) => o.matchId === parseInt(matchId)));
+        setAcceptedOffers(acceptedRes.data);
 
-      for (const offer of acceptedRes.data) {
-        const stats = await axios.get(`http://localhost:5275/api/Players/stats/${offer.receiverId}`);
-        setPlayerStats((prev) => ({ ...prev, [offer.receiverId]: stats.data }));
+        for (const offer of acceptedRes.data) {
+          const stats = await axios.get(`http://localhost:5275/api/Players/stats/${offer.receiverId}`);
+          setPlayerStats((prev) => ({ ...prev, [offer.receiverId]: stats.data }));
+        }
+      } catch (err) {
+        console.error("❌ Maç detayları alınamadı:", err);
       }
     };
 
@@ -81,7 +91,7 @@ const MatchDetailPage = () => {
         'Content-Type': 'application/json'
       }
     });
-    window.location.reload(); // hızlı çözüm: sayfayı yenile
+    window.location.reload(); // sayfayı yenile
   };
 
   const handleRemoveOffer = async (offerId: number) => {
@@ -92,7 +102,7 @@ const MatchDetailPage = () => {
     setAcceptedOffers(prev => prev.filter(o => o.id !== offerId));
   };
 
-  if (!match) return <div>Yükleniyor...</div>;
+  if (!match) return <div className="loading">Yükleniyor...</div>;
 
   return (
     <div className="match-detail-page">
@@ -140,7 +150,7 @@ const MatchDetailPage = () => {
 
       <button
         className="review-button"
-        onClick={() => window.location.href = `/match-reviews/${match.id}`}
+        onClick={() => navigate(`/match-reviews/${match.id}`)}
       >
         📝 Yorum Yap & Görüntüle
       </button>

@@ -47,7 +47,16 @@ const MatchList = () => {
             <h3>{match.team1?.name} vs {match.team2?.name}</h3>
             <p><strong>Saha:</strong> {match.fieldName}</p>
             <p><strong>Tarih:</strong> {new Date(match.matchDate).toLocaleString('tr-TR')}</p>
-            <Link to={`/matches/${match.id}`} className="detail-link">Detay</Link>
+
+            <div className="match-actions">
+              <Link to={`/matches/${match.id}`} className="detail-link">
+                Detay
+              </Link>
+
+              <Link to={`/send-offer?matchId=${match.id}`}>
+                <button className="btn-blue">➕ Maça Teklif Gönder</button>
+              </Link>
+            </div>
           </div>
         ))}
       </div>

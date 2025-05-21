@@ -56,3 +56,25 @@
 .detail-link:hover {
   background-color: #117a8b;
 }
+.match-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.btn-blue {
+  background-color: #1976d2;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-blue:hover {
+  background-color: #1565c0;
+}
