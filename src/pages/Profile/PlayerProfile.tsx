@@ -139,7 +139,7 @@ const PlayerProfilePage = () => {
 
       <div className="button-group">
         <button onClick={() => navigate('/matches')}>📅 Maçlarım</button>
-        <button onClick={() => navigate('/offers')}>📨 Gelen Teklifler</button>
+        <button onClick={() => navigate('/my-offers')}>📨 Gelen Teklifler</button>
         <button onClick={() => navigate('/players')}>👥 Oyuncular Listesi</button>
         <button onClick={() => navigate('/profile/edit')}>🛠 Profilimi Düzenle</button>
         <button onClick={() => navigate('/reviews')}>💬 Yorumlarım</button>

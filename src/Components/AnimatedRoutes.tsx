@@ -17,6 +17,7 @@ import ChangePasswordPage from '../pages/Profile/ChangePassword/ChangePasswordPa
 import Navbar from './Navbar/Navbar';
 import TurnuvaPage from '../pages/Turnuva/TurnuvaPage';
 import SendOfferPage from '../pages/Sender/SendOfferPage';
+import MyOffersPage from '../pages/Sender/MyOffers/MyOffersPage';
 
 
 
@@ -82,6 +83,7 @@ const AnimatedRoutes = () => {
             <Route path="/Turnuva" element={motionWrap(<TurnuvaPage />)} />
             <Route path="/send-offer" element={motionWrap(<SendOfferPage />)} />
             <Route path="/send-offer/:receiverId" element={motionWrap(<SendOfferPage />)} />
+            <Route path="/my-offers" element={motionWrap(<MyOffersPage />)} />
             <Route path="*" element={<Navigate to="/" />} />
           </>
         )}
