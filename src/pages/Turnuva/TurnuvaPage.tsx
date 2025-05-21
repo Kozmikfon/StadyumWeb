@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './TurnuvaPage.css';
 import CreateTeamModal from '../../Components/modals/CreateTeamModal'; // yolunu kendi dizinine göre ayarla
+import JoinTeamModal from '../../Components/modals/JoinTeamModal';
 
 interface Team {
   id: number;
@@ -24,6 +25,8 @@ const TurnuvaPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
   const [playerId, setPlayerId] = useState<number | null>(null);
+  const [showJoinTeamModal, setShowJoinTeamModal] = useState(false);
+  const [currentTeamId, setCurrentTeamId] = useState<number | null>(null);
 
   const fetchData = async () => {
     const token = localStorage.getItem('token');
@@ -32,6 +35,7 @@ const TurnuvaPage = () => {
     try {
       const playerRes = await axios.get('http://localhost:5275/api/players/byUser/me', config);
       setPlayerId(playerRes.data.id);
+      setCurrentTeamId(playerRes.data.teamId || null);
 
       const teamRes = await axios.get('http://localhost:5275/api/Teams', config);
       setTeams(teamRes.data);
@@ -113,6 +117,15 @@ const TurnuvaPage = () => {
           onTeamCreated={handleTeamCreated}
         />
       )}
+      {showJoinTeamModal && playerId !== null && (
+        <JoinTeamModal
+         playerId={playerId}
+         currentTeamId={currentTeamId}
+        onClose={() => setShowJoinTeamModal(false)}
+        onTeamJoined={fetchData}
+  />
+)}
+
     </div>
   );
 };
