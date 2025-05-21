@@ -53,10 +53,12 @@ const TurnuvaPage = () => {
     setPlayerId(playerRes.data.id);
     setCurrentTeamId(playerRes.data.teamId || null);
 
-    const teamRes = await axios.get('http://localhost:5275/api/Teams', config);
+    // 🔁 Sadece turnuvaya katılan takımları al
+    const teamRes = await axios.get('http://localhost:5275/api/Teams/tournament-teams', config);
     setTeams(teamRes.data);
 
-    const matchRes = await axios.get('http://localhost:5275/api/Matches', config);
+    // 🔁 Sadece turnuvaya ait maçları al
+    const matchRes = await axios.get('http://localhost:5275/api/Matches/tournament-matches', config);
     setMatches(matchRes.data);
 
     calculateStandings(matchRes.data);
@@ -64,6 +66,7 @@ const TurnuvaPage = () => {
     console.error("Veri alınırken hata:", err);
   }
 };
+
 
   const calculateStandings = (matchList: Match[]) => {
   const table: { [teamId: number]: Standing } = {};
