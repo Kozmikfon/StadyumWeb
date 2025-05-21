@@ -1,0 +1,70 @@
+.captain-offers-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.captain-offers-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.offer-card {
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  transition: transform 0.2s ease;
+}
+
+.offer-card:hover {
+  transform: scale(1.01);
+}
+
+.offer-info {
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: #444;
+}
+
+.offer-info strong {
+  color: #000;
+}
+
+.offer-status {
+  font-weight: bold;
+  margin-top: 10px;
+  color: #1976d2;
+}
+
+.offer-status.accepted {
+  color: #2e7d32;
+}
+
+.offer-status.rejected {
+  color: #c62828;
+}
+
+.match-detail-btn {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.match-detail-btn:hover {
+  background-color: #125ea9;
+}
+
+.empty-message {
+  text-align: center;
+  color: #777;
+  font-size: 16px;
+  margin-top: 30px;
+}
