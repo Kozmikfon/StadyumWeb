@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './TurnuvaPage.css';
+import CreateTeamModal from '../../Components/modals/CreateTeamModal'; // yolunu kendi dizinine göre ayarla
 
 interface Team {
   id: number;
@@ -21,39 +22,56 @@ const TurnuvaPage = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
+  const [playerId, setPlayerId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem('token');
+  const fetchData = async () => {
+    const token = localStorage.getItem('token');
+    const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      const teamRes = await axios.get('http://localhost:5275/api/Teams', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    try {
+      const playerRes = await axios.get('http://localhost:5275/api/players/byUser/me', config);
+      setPlayerId(playerRes.data.id);
+
+      const teamRes = await axios.get('http://localhost:5275/api/Teams', config);
       setTeams(teamRes.data);
 
-      const matchRes = await axios.get('http://localhost:5275/api/Matches', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const matchRes = await axios.get('http://localhost:5275/api/Matches', config);
       setMatches(matchRes.data);
-    };
+    } catch (err) {
+      console.error("Veri alınırken hata:", err);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
+
+  const handleTeamCreated = () => {
+    fetchData();
+  };
 
   return (
     <div className="turnuva-page">
       <h2>🏆 14-16 Yaş Gençler Turnuvası</h2>
       <p>📅 Turnuva 15 Temmuz'da başlıyor. Katılım ücretsiz. Finalde sürpriz ödüller sizi bekliyor!</p>
-      <button className="info-btn" onClick={() => setShowModal(true)}>📩 Bilgi Al / Başvur</button>
+
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <button className="info-btn" onClick={() => setShowModal(true)}>📩 Bilgi Al / Başvur</button>
+        <button className="info-btn" onClick={() => setShowCreateTeamModal(true)}>🛡 Takım Oluştur</button>
+      </div>
 
       {/* TAKIMLAR */}
       <section>
         <h3>⚽ Katılan Takımlar</h3>
-        <ul className="team-list">
-          {teams.map(team => (
-            <li key={team.id}>{team.name}</li>
+        <div className="team-grid">
+          {teams.map((team: any) => (
+            <div className="team-card" key={team.id}>
+              <div className="team-icon">{team.name[0]}</div>
+              <h4>{team.name}</h4>
+            </div>
           ))}
-        </ul>
+        </div>
       </section>
 
       {/* MAÇLAR */}
@@ -68,7 +86,7 @@ const TurnuvaPage = () => {
         </ul>
       </section>
 
-      {/* MODAL */}
+      {/* Başvuru MODAL */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
@@ -85,6 +103,15 @@ const TurnuvaPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Takım Oluşturma MODAL */}
+      {showCreateTeamModal && playerId !== null && (
+        <CreateTeamModal
+          playerId={playerId}
+          onClose={() => setShowCreateTeamModal(false)}
+          onTeamCreated={handleTeamCreated}
+        />
       )}
     </div>
   );
