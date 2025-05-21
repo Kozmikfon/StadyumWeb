@@ -1,77 +1,149 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import './MatchDetailPage.css';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
-interface Team {
+interface Offer {
   id: number;
-  name: string;
-}
-
-interface Player {
-  id: number;
-  firstName: string;
-  lastName: string;
+  senderId: number;
+  receiverId: number;
+   matchId: number;
+  receiverName?: string;
+  status: string;
 }
 
 interface Match {
   id: number;
   fieldName: string;
   matchDate: string;
-  team1: Team;
-  team2: Team;
-  acceptedPlayers?: Player[]; // Opsiyonel olarak tekliften gelen oyuncular
+  team1Name: string;
+  team2Name: string;
+  team1CaptainId: number;
 }
 
-const MatchDetailPage: React.FC = () => {
-  const { id } = useParams();
+interface PlayerStats {
+  totalMatches: number;
+  totalOffers: number;
+  averageRating: number;
+  membershipDays: number;
+}
+
+const MatchDetailPage = () => {
+  const { matchId } = useParams();
   const [match, setMatch] = useState<Match | null>(null);
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [acceptedOffers, setAcceptedOffers] = useState<Offer[]>([]);
+  const [playerId, setPlayerId] = useState<number | null>(null);
+  const [playerStats, setPlayerStats] = useState<{ [id: number]: PlayerStats }>({});
 
   useEffect(() => {
-    const fetchMatch = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5275/api/Matches/${id}`);
-        const matchData = response.data;
+    const fetchData = async () => {
+      const token = localStorage.getItem('token');
+      const decoded: any = jwtDecode(token || '');
+      setPlayerId(decoded.playerId);
 
-        // Kabul edilen oyuncuları eklemek istersen:
-        const acceptedOffers = await axios.get(`http://localhost:5275/api/Offers/accepted-by-match/${id}`);
-        matchData.acceptedPlayers = acceptedOffers.data.map((offer: any) => ({
-          id: offer.receiverId,
-          firstName: offer.receiverFirstName,
-          lastName: offer.receiverLastName,
-        }));
+      const config = { headers: { Authorization: `Bearer ${token}` } };
 
-        setMatch(matchData);
-      } catch (error) {
-        console.error('Maç bilgisi alınamadı:', error);
+      const [matchRes, offersRes, acceptedRes] = await Promise.all([
+        axios.get(`http://localhost:5275/api/Matches/${matchId}`, config),
+        axios.get(`http://localhost:5275/api/Offers`, config),
+        axios.get(`http://localhost:5275/api/Offers/accepted-by-match/${matchId}`, config),
+      ]);
+
+      setMatch(matchRes.data);
+      setOffers(offersRes.data.filter((o: Offer) => o.matchId === Number(matchId) ));
+      setAcceptedOffers(acceptedRes.data);
+
+      for (const offer of acceptedRes.data) {
+        const stats = await axios.get(`http://localhost:5275/api/Players/stats/${offer.receiverId}`);
+        setPlayerStats((prev) => ({ ...prev, [offer.receiverId]: stats.data }));
       }
     };
 
-    fetchMatch();
-  }, [id]);
+    fetchData();
+  }, [matchId]);
 
-  if (!match) return <p className="match-loading">Yükleniyor...</p>;
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case 'Accepted': return 'Kabul Edildi';
+      case 'Rejected': return 'Reddedildi';
+      case 'Pending': return 'Beklemede';
+      default: return status;
+    }
+  };
+
+  const handleUpdateStatus = async (offerId: number, status: 'Accepted' | 'Rejected') => {
+    const token = localStorage.getItem('token');
+    await axios.put(`http://localhost:5275/api/Offers/update-status/${offerId}`, `"${status}"`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    window.location.reload(); // hızlı çözüm: sayfayı yenile
+  };
+
+  const handleRemoveOffer = async (offerId: number) => {
+    const token = localStorage.getItem('token');
+    await axios.delete(`http://localhost:5275/api/Offers/${offerId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setAcceptedOffers(prev => prev.filter(o => o.id !== offerId));
+  };
+
+  if (!match) return <div>Yükleniyor...</div>;
 
   return (
-    <div className="match-detail">
-      <h2>Maç Detayı</h2>
+    <div className="match-detail-page">
+      <h2>🏟 Maç Detayı</h2>
       <p><strong>Saha:</strong> {match.fieldName}</p>
-      <p><strong>Tarih:</strong> {new Date(match.matchDate).toLocaleString('tr-TR')}</p>
-      <p><strong>Takım 1:</strong> {match.team1?.name}</p>
-      <p><strong>Takım 2:</strong> {match.team2?.name}</p>
+      <p><strong>Tarih:</strong> {new Date(match.matchDate).toLocaleString()}</p>
+      <p><strong>Takım 1:</strong> {match.team1Name}</p>
+      <p><strong>Takım 2:</strong> {match.team2Name}</p>
 
-      {match.acceptedPlayers && (
-        <>
-          <h3>Katılan Oyuncular</h3>
-          <ul>
-            {match.acceptedPlayers.map((player) => (
-              <li key={player.id}>
-                {player.firstName} {player.lastName}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+      <h3>📨 Gelen Teklifler</h3>
+      <ul className="offer-list">
+        {offers.map(offer => (
+          <li key={offer.id}>
+            Gönderen: {offer.senderId} | Alıcı: {offer.receiverId} | Durum: {translateStatus(offer.status)}
+            {offer.status === 'Pending' && offer.receiverId === playerId && (
+              <>
+                <button onClick={() => handleUpdateStatus(offer.id, 'Accepted')}>Kabul Et</button>
+                <button onClick={() => handleUpdateStatus(offer.id, 'Rejected')}>Reddet</button>
+              </>
+            )}
+          </li>
+        ))}
+        {offers.length === 0 && <li>Bu maça teklif gönderilmemiş.</li>}
+      </ul>
+
+      <h3>✅ Katılacak Oyuncular</h3>
+      <ul className="accepted-list">
+        {acceptedOffers.map(offer => (
+          <li key={offer.id}>
+            <strong>{offer.receiverName}</strong>
+            <ul>
+              <li>Durum: {translateStatus(offer.status)}</li>
+              <li>Maç: {playerStats[offer.receiverId]?.totalMatches || 0}</li>
+              <li>Teklif: {playerStats[offer.receiverId]?.totalOffers || 0}</li>
+              <li>Puan: {playerStats[offer.receiverId]?.averageRating || 0}</li>
+              <li>Üyelik: {playerStats[offer.receiverId]?.membershipDays || 0} gün</li>
+            </ul>
+            {match.team1CaptainId === playerId && (
+              <button onClick={() => handleRemoveOffer(offer.id)}>❌ Oyuncuyu Çıkar</button>
+            )}
+          </li>
+        ))}
+        {acceptedOffers.length === 0 && <li>Henüz kabul edilen oyuncu yok.</li>}
+      </ul>
+
+      <button
+        className="review-button"
+        onClick={() => window.location.href = `/match-reviews/${match.id}`}
+      >
+        📝 Yorum Yap & Görüntüle
+      </button>
     </div>
   );
 };

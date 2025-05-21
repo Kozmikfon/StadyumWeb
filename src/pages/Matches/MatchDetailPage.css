@@ -1,36 +1,99 @@
-.match-detail {
-  padding: 24px;
-  max-width: 700px;
+.match-detail-page {
+  max-width: 800px;
   margin: 0 auto;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f0f0f0;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: #fdfdfd;
 }
 
-.match-detail h2 {
+.match-detail-page h2 {
   font-size: 26px;
-  margin-bottom: 16px;
-  text-align: center;
+  margin-bottom: 10px;
+  color: #2c3e50;
 }
 
-.match-detail p {
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.match-detail h3 {
+.match-detail-page h3 {
   font-size: 20px;
-  margin-top: 20px;
-  margin-bottom: 8px;
+  margin-top: 30px;
+  color: #34495e;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
 }
 
-.match-detail ul {
-  list-style-type: disc;
-  padding-left: 20px;
+.match-detail-page p {
+  margin: 6px 0;
+  font-size: 16px;
 }
 
-.match-loading {
-  padding: 20px;
-  font-size: 18px;
+.offer-list, .accepted-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 15px;
+}
+
+.offer-list li,
+.accepted-list li {
+  background-color: #f4f4f4;
+  margin-bottom: 10px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.offer-list li button,
+.accepted-list li button {
+  margin-left: 8px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.offer-list li button:hover,
+.accepted-list li button:hover {
+  background-color: #2980b9;
+}
+
+.accepted-list li ul {
+  padding-left: 16px;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.review-button {
+  margin-top: 30px;
+  background-color: #8e44ad;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
   text-align: center;
+}
+
+.review-button:hover {
+  background-color: #6c3483;
+}
+
+@media (max-width: 600px) {
+  .match-detail-page {
+    padding: 20px 15px;
+  }
+
+  .offer-list li,
+  .accepted-list li {
+    font-size: 14px;
+  }
+
+  .review-button {
+    font-size: 14px;
+  }
 }
