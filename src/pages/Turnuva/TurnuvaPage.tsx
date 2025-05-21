@@ -63,6 +63,7 @@ const TurnuvaPage = () => {
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         <button className="info-btn" onClick={() => setShowModal(true)}>📩 Bilgi Al / Başvur</button>
         <button className="info-btn" onClick={() => setShowCreateTeamModal(true)}>🛡 Takım Oluştur</button>
+        <button className="info-btn" onClick={() => setShowJoinTeamModal(true)}>👥 Takıma Katıl</button>
       </div>
 
       {/* TAKIMLAR */}
