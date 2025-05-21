@@ -45,13 +45,12 @@ const TournamentMatchModal = ({ onClose, onMatchCreated }: TournamentMatchModalP
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:5275/api/Matches/tournament',
-        { fieldName, matchDate, team1Id, team2Id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+     await axios.post(
+  'http://localhost:5275/api/Matches/create-tournament-match',
+  { fieldName, matchDate, team1Id, team2Id },
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
       alert('✅ Maç başarıyla oluşturuldu!');
       onMatchCreated();
       onClose();
