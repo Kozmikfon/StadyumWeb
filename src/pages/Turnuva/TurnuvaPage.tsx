@@ -1,11 +1,10 @@
-// src/pages/Turnuva/TurnuvaPage.tsx
-
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './TurnuvaPage.css';
 import CreateTeamModal from '../../Components/modals/CreateTeamModal'; // yolunu kendi dizinine göre ayarla
 import JoinTeamModal from '../../Components/modals/JoinTeamModal';
 import LeaveTeamModal from '../../Components/modals/LeaveTeamModal';
+import { jwtDecode } from 'jwt-decode';
 
 interface Team {
   id: number;
@@ -42,32 +41,39 @@ const TurnuvaPage = () => {
 
 
   const fetchData = async () => {
-    const token = localStorage.getItem('token');
-    const config = { headers: { Authorization: `Bearer ${token}` } };
+  const token = localStorage.getItem('token');
+  const config = { headers: { Authorization: `Bearer ${token}` } };
 
-    try {
-      const playerRes = await axios.get('http://localhost:5275/api/players/byUser/me', config);
-      setPlayerId(playerRes.data.id);
-      setCurrentTeamId(playerRes.data.teamId || null);
+  try {
+    const decoded: any = jwtDecode(token!);
+    const userId = decoded.userId;
 
-      const teamRes = await axios.get('http://localhost:5275/api/Teams', config);
-      setTeams(teamRes.data);
+    const playerRes = await axios.get(`http://localhost:5275/api/players/byUser/${userId}`, config);
 
-      const matchRes = await axios.get('http://localhost:5275/api/Matches', config);
-      setMatches(matchRes.data);
-      calculateStandings(matchRes.data);
-    } catch (err) {
-      console.error("Veri alınırken hata:", err);
-    }
-  };
+    setPlayerId(playerRes.data.id);
+    setCurrentTeamId(playerRes.data.teamId || null);
+
+    const teamRes = await axios.get('http://localhost:5275/api/Teams', config);
+    setTeams(teamRes.data);
+
+    const matchRes = await axios.get('http://localhost:5275/api/Matches', config);
+    setMatches(matchRes.data);
+
+    calculateStandings(matchRes.data);
+  } catch (err) {
+    console.error("Veri alınırken hata:", err);
+  }
+};
+
   const calculateStandings = (matchList: Match[]) => {
   const table: { [teamId: number]: Standing } = {};
 
   matchList.forEach(match => {
+    if (!match.team1 || !match.team2) return; // ⚠️ eksik maçları atla
+
     const team1Id = match.team1.id;
     const team2Id = match.team2.id;
 
-    // Rastgele skor verelim (şimdilik, backend skor tutmuyorsa)
     const team1Score = Math.floor(Math.random() * 4);
     const team2Score = Math.floor(Math.random() * 4);
 
@@ -108,6 +114,7 @@ const TurnuvaPage = () => {
   const sorted = Object.values(table).sort((a, b) => b.points - a.points);
   setStandings(sorted);
 };
+
 
   
 
