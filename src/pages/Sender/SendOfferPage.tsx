@@ -12,7 +12,7 @@ interface Match {
 
 const SendOfferPage = () => {
   const navigate = useNavigate();
-  const { receiverId } = useParams(); // oyuncuya teklif için
+  const { receiverId } = useParams();
   const location = useLocation();
   const matchIdFromQuery = new URLSearchParams(location.search).get('matchId');
 
@@ -33,21 +33,28 @@ const SendOfferPage = () => {
 
   useEffect(() => {
     const init = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Giriş yapmanız gerekiyor.');
-        navigate('/login');
-        return;
-      }
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('Giriş yapmanız gerekiyor.');
+          navigate('/login');
+          return;
+        }
 
-      const decoded: any = jwtDecode(token);
-      setSenderId(decoded.playerId);
+const decoded: any = jwtDecode(token);
+const rawPlayerId = decoded.playerId;
+const fixedPlayerId = Array.isArray(rawPlayerId) ? rawPlayerId[0] : rawPlayerId;
+setSenderId(Number(fixedPlayerId));
 
-      if (!matchIdFromQuery) {
-        const matchRes = await axios.get('http://localhost:5275/api/Matches');
-        setMatches(matchRes.data);
-      } else {
-        fetchAcceptedCount(Number(matchIdFromQuery));
+
+        if (!matchIdFromQuery) {
+          const res = await axios.get('http://localhost:5275/api/Matches');
+          setMatches(res.data);
+        } else {
+          fetchAcceptedCount(Number(matchIdFromQuery));
+        }
+      } catch (err) {
+        console.error('❌ Veriler alınamadı:', err);
       }
     };
 
@@ -67,29 +74,29 @@ const SendOfferPage = () => {
     }
 
     if (acceptedCount >= 14) {
-      alert('Bu maç dolu. Başka maç seçin.');
+      alert('Bu maç dolu.');
       return;
     }
 
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-
       const offerDto = {
         senderId,
         matchId: selectedMatchId,
         receiverId: receiverId ? Number(receiverId) : null,
       };
+      console.log("📤 Giden DTO:", offerDto);
 
       await axios.post('http://localhost:5275/api/Offers', offerDto, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
 
-      alert('✅ Teklif başarıyla gönderildi.');
-      navigate(-1); // geri dön
+      alert('✅ Teklif gönderildi');
+      navigate(-1);
     } catch (err: any) {
       console.error('❌ Teklif gönderilemedi:', err);
-      const msg = err.response?.data || 'Teklif gönderilirken hata oluştu.';
+      const msg = err.response?.data || 'Bir hata oluştu.';
       alert(msg);
     } finally {
       setLoading(false);
@@ -104,8 +111,9 @@ const SendOfferPage = () => {
 
       {!matchIdFromQuery && (
         <>
-          <label>📅 Maç Seçin:</label>
+          <label htmlFor="match-select">📅 Maç Seçin:</label>
           <select
+            id="match-select"
             value={selectedMatchId}
             onChange={(e) => setSelectedMatchId(Number(e.target.value))}
           >
@@ -124,7 +132,7 @@ const SendOfferPage = () => {
       {acceptedCount >= 14 ? (
         <p className="full-warning">🛑 Bu maç dolu</p>
       ) : (
-        <button className="send-btn" onClick={handleSendOffer} disabled={loading}>
+        <button onClick={handleSendOffer} className="send-btn" disabled={loading}>
           ➕ Teklif Gönder
         </button>
       )}

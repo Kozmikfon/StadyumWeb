@@ -52,9 +52,9 @@ const PlayerList = () => {
                 Detay
               </Link>
 
-              <Link to={`/send-offer?receiverId=${player.id}`}>
-                <button className="btn-green">➕ Oyuncuya Teklif Gönder</button>
-              </Link>
+              <Link to={`/send-offer/${player.id}`}>
+  <button className="btn-green">➕ Oyuncuya Teklif Gönder</button>
+</Link>
             </div>
           </div>
         ))}

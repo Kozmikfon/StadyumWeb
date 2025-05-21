@@ -54,8 +54,8 @@ const MatchList = () => {
               </Link>
 
               <Link to={`/send-offer?matchId=${match.id}`}>
-                <button className="btn-blue">➕ Maça Teklif Gönder</button>
-              </Link>
+  <button className="btn-blue">➕ Maça Teklif Gönder</button>
+</Link>
             </div>
           </div>
         ))}
