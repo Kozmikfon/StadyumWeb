@@ -5,6 +5,7 @@ import CreateTeamModal from '../../Components/modals/CreateTeamModal'; // yolunu
 import JoinTeamModal from '../../Components/modals/JoinTeamModal';
 import LeaveTeamModal from '../../Components/modals/LeaveTeamModal';
 import { jwtDecode } from 'jwt-decode';
+import TournamentMatchModal from '../../Components/modals/TournamentMatchModal';
 
 interface Team {
   id: number;
@@ -38,6 +39,7 @@ const TurnuvaPage = () => {
   const [currentTeamId, setCurrentTeamId] = useState<number | null>(null);
   const [showLeaveTeamModal, setShowLeaveTeamModal] = useState(false);
   const [standings, setStandings] = useState<Standing[]>([]);
+  const [showMatchModal, setShowMatchModal] = useState(false);
 
 
   const fetchData = async () => {
@@ -143,6 +145,8 @@ const TurnuvaPage = () => {
     🚪 Takımdan Ayrıl
   </button>
 )}
+<button className="info-btn" onClick={() => setShowMatchModal(true)}>➕ Maç Oluştur</button>
+
 
       </div>
 
@@ -213,6 +217,13 @@ const TurnuvaPage = () => {
     onTeamLeft={fetchData}
   />
 )}
+{showMatchModal && (
+  <TournamentMatchModal
+    onClose={() => setShowMatchModal(false)}
+    onMatchCreated={fetchData}
+  />
+)}
+
 <section>
   <h3>🏅 Puan Durumu</h3>
   <table className="standings-table">
