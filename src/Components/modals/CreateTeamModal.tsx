@@ -24,14 +24,15 @@ const CreateTeamModal = ({ playerId, onClose, onTeamCreated }: CreateTeamModalPr
       setLoading(true);
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:5275/api/Teams',
-        { name: teamName, captainId: playerId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  'http://localhost:5275/api/Teams/create-tournament-team',
+  { name: teamName, captainId: playerId },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
 
       alert('✅ Takım başarıyla oluşturuldu!');
       setTeamName('');

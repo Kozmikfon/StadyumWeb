@@ -22,7 +22,7 @@ const JoinTeamModal = ({ playerId, currentTeamId, onClose, onTeamJoined }: JoinT
   useEffect(() => {
     const fetchTeams = async () => {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5275/api/Teams', {
+      const res = await axios.get('http://localhost:5275/api/Teams/tournament-teams', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTeams(res.data);
@@ -61,7 +61,7 @@ const JoinTeamModal = ({ playerId, currentTeamId, onClose, onTeamJoined }: JoinT
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h3>Takıma Katıl</h3>
+        <h3>Takıma Katıl (Turnuva)</h3>
         <ul style={{ maxHeight: '250px', overflowY: 'auto', marginTop: '10px' }}>
           {teams.map((team) => (
             <li key={team.id} style={{ marginBottom: '10px' }}>
