@@ -23,15 +23,15 @@ const MyOffersPage = () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          alert("Giriş yapmanız gerekiyor.");
+          alert('Giriş yapmanız gerekiyor.');
           navigate('/login');
           return;
         }
 
         const decoded: any = jwtDecode(token);
-        // 👇 Token içindeki playerId'yi dizi gelmesine karşı kontrol et
-        const rawPlayerId = decoded.playerId;
-        const playerId = Array.isArray(rawPlayerId) ? rawPlayerId[0] : rawPlayerId;
+        // ✅ playerId varsa array mi kontrolü
+        const rawId = decoded.playerId;
+        const playerId = Array.isArray(rawId) ? rawId[0] : rawId;
 
         const response = await axios.get(`http://localhost:5275/api/Offers/byPlayer/${playerId}`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -40,6 +40,7 @@ const MyOffersPage = () => {
         setOffers(response.data);
       } catch (err) {
         console.error('❌ Teklifler alınamadı:', err);
+        alert('Teklifler alınırken hata oluştu.');
       } finally {
         setLoading(false);
       }
@@ -60,6 +61,7 @@ const MyOffersPage = () => {
   const updateStatus = async (offerId: number, status: string) => {
     try {
       const token = localStorage.getItem('token');
+
       await axios.put(`http://localhost:5275/api/Offers/update-status/${offerId}`, { status }, {
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +70,10 @@ const MyOffersPage = () => {
       });
 
       alert(`Teklif ${translateStatus(status)} olarak güncellendi`);
-      setOffers((prev) => prev.map(o => o.id === offerId ? { ...o, status } : o));
+      // Teklif durumu yerinde güncellensin:
+      setOffers(prev =>
+        prev.map(o => o.id === offerId ? { ...o, status } : o)
+      );
     } catch (error) {
       console.error('❌ Güncelleme hatası:', error);
       alert('Durum güncellenemedi.');
@@ -88,30 +93,32 @@ const MyOffersPage = () => {
             <button className="reject-btn" onClick={() => updateStatus(offer.id, 'Rejected')}>Reddet</button>
           </>
         )}
-        <button className="detail-btn" onClick={() => navigate(`/matches/${offer.matchId}`)}>
-          📄 Maç Detayı
-        </button>
+        <button className="detail-btn" onClick={() => navigate(`/matches/${offer.matchId}`)}>📄 Maç Detayı</button>
       </div>
     </div>
   );
 
-  const filterOffers = (status: string) => offers.filter(o => o.status === status);
+  const filterOffers = (status: string) =>
+    offers.filter(o => o.status === status);
 
-  if (loading) return <div className="loading">Yükleniyor...</div>;
+  if (loading) return <p>Yükleniyor...</p>;
 
   return (
     <div className="my-offers-container">
       <h2>📨 Bekleyen Teklifler</h2>
-      {filterOffers('Pending').map(renderOfferCard)}
-      {filterOffers('Pending').length === 0 && <p>Henüz bekleyen teklif yok.</p>}
+      {filterOffers('Pending').length > 0
+        ? filterOffers('Pending').map(renderOfferCard)
+        : <p>Henüz bekleyen teklif yok.</p>}
 
       <h2>✅ Kabul Ettiklerim</h2>
-      {filterOffers('Accepted').map(renderOfferCard)}
-      {filterOffers('Accepted').length === 0 && <p>Hiçbir teklifi kabul etmediniz.</p>}
+      {filterOffers('Accepted').length > 0
+        ? filterOffers('Accepted').map(renderOfferCard)
+        : <p>Hiçbir teklifi kabul etmediniz.</p>}
 
       <h2>❌ Reddettiklerim</h2>
-      {filterOffers('Rejected').map(renderOfferCard)}
-      {filterOffers('Rejected').length === 0 && <p>Henüz reddettiğiniz teklif yok.</p>}
+      {filterOffers('Rejected').length > 0
+        ? filterOffers('Rejected').map(renderOfferCard)
+        : <p>Henüz reddettiğiniz teklif yok.</p>}
 
       <button className="captain-btn" onClick={() => navigate('/captain-offers')}>
         🛡 Maça Gelen Teklifleri Gör
