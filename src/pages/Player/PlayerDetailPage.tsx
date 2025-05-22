@@ -23,8 +23,6 @@ interface Player {
   position: string;
   skillLevel: number;
   rating: number;
-  age: number;
-  nationality: string;
   team?: Team;
   stats?: PlayerStat;
 }
@@ -52,8 +50,6 @@ const PlayerDetailPage: React.FC = () => {
     <div className="player-detail">
       <h2>{player.firstName} {player.lastName}</h2>
       <p><strong>Email:</strong> {player.email}</p>
-      <p><strong>Yaş:</strong> {player.age}</p>
-      <p><strong>Uyruk:</strong> {player.nationality}</p>
       <p><strong>Pozisyon:</strong> {player.position}</p>
       <p><strong>Yetenek Seviyesi:</strong> {player.skillLevel}</p>
       <p><strong>Puan:</strong> {player.rating}</p>
@@ -62,11 +58,26 @@ const PlayerDetailPage: React.FC = () => {
       {player.stats && (
         <div className="player-stats">
           <h3>📊 Sezon İstatistikleri</h3>
-          <p><strong>Maç:</strong> {player.stats.matchesPlayed}</p>
-          <p><strong>Gol:</strong> {player.stats.goals}</p>
-          <p><strong>Asist:</strong> {player.stats.assists}</p>
-          <p><strong>Sarı Kart:</strong> {player.stats.yellowCards}</p>
-          <p><strong>Kırmızı Kart:</strong> {player.stats.redCards}</p>
+          <table className="stats-table">
+            <thead>
+              <tr>
+                <th>Maç</th>
+                <th>Gol</th>
+                <th>Asist</th>
+                <th>Sarı Kart</th>
+                <th>Kırmızı Kart</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{player.stats.matchesPlayed}</td>
+                <td>{player.stats.goals}</td>
+                <td>{player.stats.assists}</td>
+                <td>{player.stats.yellowCards}</td>
+                <td>{player.stats.redCards}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )}
     </div>
