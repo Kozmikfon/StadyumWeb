@@ -39,50 +39,60 @@ const MatchDetailPage = () => {
   const [playerStats, setPlayerStats] = useState<{ [id: number]: PlayerStats }>({});
   const [latestReviews, setLatestReviews] = useState<any[]>([]);
   const [likeCounts, setLikeCounts] = useState<{ [key: number]: number }>({});
-
+  const [likedStates, setLikedStates] = useState<{ [key: number]: boolean }>({}); // ❤️ beğenme durumu
 
   useEffect(() => {
-  const fetchData = async () => {
-    if (!matchId) return;
+    const fetchData = async () => {
+      if (!matchId) return;
 
-    const token = localStorage.getItem('token');
-    const decoded: any = jwtDecode(token || '');
-    setPlayerId(decoded.playerId);
+      const token = localStorage.getItem('token');
+const decoded: any = jwtDecode(token || '');
+const rawPlayerId = decoded?.playerId;
+const parsedPlayerId = Array.isArray(rawPlayerId) ? Number(rawPlayerId[0]) : Number(rawPlayerId);
+setPlayerId(parsedPlayerId);
 
-    const config = { headers: { Authorization: `Bearer ${token}` } };
 
-    const [matchRes, offersRes, acceptedRes, reviewsRes] = await Promise.all([
-      axios.get(`http://localhost:5275/api/Matches/${matchId}`, config),
-      axios.get(`http://localhost:5275/api/Offers`, config),
-      axios.get(`http://localhost:5275/api/Offers/accepted-by-match/${matchId}`, config),
-      axios.get(`http://localhost:5275/api/Reviews`, config),
-    ]);
+      const config = { headers: { Authorization: `Bearer ${token}` } };
 
-    setMatch(matchRes.data);
-    setOffers(offersRes.data.filter((o: Offer) => o.matchId === parseInt(matchId)));
-    setAcceptedOffers(acceptedRes.data);
+      const [matchRes, offersRes, acceptedRes, reviewsRes] = await Promise.all([
+        axios.get(`http://localhost:5275/api/Matches/${matchId}`, config),
+        axios.get(`http://localhost:5275/api/Offers`, config),
+        axios.get(`http://localhost:5275/api/Offers/accepted-by-match/${matchId}`, config),
+        axios.get(`http://localhost:5275/api/Reviews`, config),
+      ]);
 
-    // Oyuncu istatistikleri
-    for (const offer of acceptedRes.data) {
-      const stats = await axios.get(`http://localhost:5275/api/Players/stats/${offer.receiverId}`);
-      setPlayerStats((prev) => ({ ...prev, [offer.receiverId]: stats.data }));
-    }
+      setMatch(matchRes.data);
+      setOffers(offersRes.data.filter((o: Offer) => o.matchId === parseInt(matchId)));
+      setAcceptedOffers(acceptedRes.data);
 
-    // Son yorumlar ve beğeni sayıları
-    const matchReviews = reviewsRes.data.filter((r: any) => r.matchId === parseInt(matchId));
-    setLatestReviews(matchReviews.slice(-3)); // Son 3 yorum
+      for (const offer of acceptedRes.data) {
+        const stats = await axios.get(`http://localhost:5275/api/Players/stats/${offer.receiverId}`);
+        setPlayerStats((prev) => ({ ...prev, [offer.receiverId]: stats.data }));
+      }
 
-    const likeMap: any = {};
-    for (const review of matchReviews) {
-      const likeCount = await axios.get(`http://localhost:5275/api/CommentLikes/count/${review.id}`);
-      likeMap[review.id] = likeCount.data;
-    }
-    setLikeCounts(likeMap);
-  };
+      const matchReviews = reviewsRes.data.filter((r: any) => r.matchId === parseInt(matchId));
+      setLatestReviews(matchReviews.slice(-3)); // Son 3 yorum
 
-  fetchData();
-}, [matchId]);
+      const likeMap: any = {};
+      const likedMap: any = {};
 
+      for (const review of matchReviews) {
+        const [countRes, likedRes] = await Promise.all([
+          axios.get(`http://localhost:5275/api/CommentLikes/count/${review.id}`),
+          axios.get(`http://localhost:5275/api/CommentLikes/has-liked/${review.id}/${parsedPlayerId}`)
+
+        ]);
+
+        likeMap[review.id] = countRes.data;
+        likedMap[review.id] = likedRes.data;
+      }
+
+      setLikeCounts(likeMap);
+      setLikedStates(likedMap);
+    };
+
+    fetchData();
+  }, [matchId]);
 
   const translateStatus = (status: string) => {
     switch (status) {
@@ -93,6 +103,31 @@ const MatchDetailPage = () => {
     }
   };
 
+  const handleLikeToggle = async (reviewId: number) => {
+  const token = localStorage.getItem('token');
+  if (!token || !playerId) return;
+
+  try {
+    await axios.post('http://localhost:5275/api/CommentLikes', {
+      reviewId,
+      playerId, // camelCase olarak gönder
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const [likedRes, countRes] = await Promise.all([
+      axios.get(`http://localhost:5275/api/CommentLikes/has-liked/${reviewId}/${playerId}`),
+      axios.get(`http://localhost:5275/api/CommentLikes/count/${reviewId}`),
+    ]);
+
+    setLikedStates(prev => ({ ...prev, [reviewId]: likedRes.data }));
+    setLikeCounts(prev => ({ ...prev, [reviewId]: countRes.data }));
+  } catch (err) {
+    console.error("Like işlemi başarısız:", err);
+  }
+};
+
+
   const handleUpdateStatus = async (offerId: number, status: 'Accepted' | 'Rejected') => {
     const token = localStorage.getItem('token');
     await axios.put(`http://localhost:5275/api/Offers/update-status/${offerId}`, `"${status}"`, {
@@ -101,7 +136,7 @@ const MatchDetailPage = () => {
         'Content-Type': 'application/json'
       }
     });
-    window.location.reload(); // sayfayı yenile
+    window.location.reload();
   };
 
   const handleRemoveOffer = async (offerId: number) => {
@@ -157,28 +192,32 @@ const MatchDetailPage = () => {
         ))}
         {acceptedOffers.length === 0 && <li>Henüz kabul edilen oyuncu yok.</li>}
       </ul>
-      <h3>🗣️ Son Yorumlar</h3>
-<ul className="review-list">
-  {latestReviews.length === 0 ? (
-    <li>Bu maça henüz yorum yapılmadı.</li>
-  ) : (
-    latestReviews.map((review) => (
-      <li key={review.id}>
-        <strong>⭐ {review.rating}</strong> - {review.comment}
-        <span style={{ marginLeft: '10px' }}>❤️ {likeCounts[review.id] || 0}</span>
-      </li>
-    ))
-  )}
-</ul>
 
+      <h3>🗣️ Son Yorumlar</h3>
+      <ul className="review-list">
+        {latestReviews.length === 0 ? (
+          <li>Bu maça henüz yorum yapılmadı.</li>
+        ) : (
+          latestReviews.map((review) => (
+            <li key={review.id}>
+              <strong>⭐ {review.rating}</strong> - {review.comment}
+              <span style={{ marginLeft: '10px' }}>
+                <button onClick={() => handleLikeToggle(review.id)}>
+                  {likedStates[review.id] ? '❤️ Beğendin' : '🤍 Beğen'}
+                </button>
+                ({likeCounts[review.id] || 0})
+              </span>
+            </li>
+          ))
+        )}
+      </ul>
 
       <button
-  className="review-button"
-  onClick={() => navigate(`/match-reviews/${match.id}`)}
->
-  📝 Yorum Yap & Görüntüle
-</button>
-
+        className="review-button"
+        onClick={() => navigate(`/match-reviews/${match.id}`)}
+      >
+        📝 Yorum Yap & Görüntüle
+      </button>
     </div>
   );
 };
