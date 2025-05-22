@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './EditProfile.css';
+import { useNavigate } from 'react-router-dom';
 
 interface Player {
   email: string;
@@ -13,6 +14,7 @@ const EditProfilePage = () => {
     email: '',
     position: ''
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -59,6 +61,7 @@ const EditProfilePage = () => {
       });
 
       alert('✅ Profiliniz güncellendi.');
+      navigate('/profile');
     } catch (err) {
       console.error('Güncelleme hatası:', err);
       alert('❌ Güncelleme başarısız. Lütfen geçerli bilgileri girin.');
