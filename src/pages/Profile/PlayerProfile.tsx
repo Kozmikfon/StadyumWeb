@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import './PlayerProfilePage.css';
+import './PlayerProfile.css';
 import { useNavigate } from 'react-router-dom';
 
 interface Player {
@@ -141,7 +141,10 @@ const PlayerProfilePage = () => {
         <button onClick={() => navigate('/matches')}>📅 Maçlarım</button>
         <button onClick={() => navigate('/my-offers')}>📨 Gelen Teklifler</button>
         <button onClick={() => navigate('/players')}>👥 Oyuncular Listesi</button>
-        <button onClick={() => navigate('/profile/edit')}>🛠 Profilimi Düzenle</button>
+        <button className="profile-btn" onClick={() => navigate('/edit-profile')}>
+  ✏️ Profili Düzenle
+</button>
+
         <button onClick={() => navigate('/reviews')}>💬 Yorumlarım</button>
       </div>
 <button onClick={() => navigate('/change-password')} className="password-btn">
