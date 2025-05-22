@@ -1,0 +1,40 @@
+.match-stats-container {
+  padding: 20px;
+  max-width: 700px;
+  margin: auto;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.stats-table th,
+.stats-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.stat-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat-form input,
+.stat-form select {
+  padding: 8px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+}
+
+.submit-btn {
+  background-color: #1976d2;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
