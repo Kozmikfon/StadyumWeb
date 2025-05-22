@@ -31,6 +31,7 @@ interface Player {
   rating: number;
   team?: Team;
   stats?: PlayerStat;
+  teamName?: string;
 }
 
 const PlayerDetailPage: React.FC = () => {
@@ -72,7 +73,8 @@ const PlayerDetailPage: React.FC = () => {
       <p><strong>Pozisyon:</strong> {player.position}</p>
       <p><strong>Yetenek Seviyesi:</strong> {player.skillLevel}</p>
       <p><strong>Puan:</strong> {player.rating}</p>
-      <p><strong>Takım:</strong> {player.team?.name || 'Yok'}</p>
+      <p><strong>Takım:</strong> {player.teamName || 'Yok'}</p>
+
 
       {player.stats && (
         <div className="player-stats">
