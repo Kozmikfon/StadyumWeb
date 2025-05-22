@@ -21,6 +21,7 @@ import MyOffersPage from '../pages/Sender/MyOffers/MyOffersPage';
 import CaptainOffersPage from '../pages/Sender/Offers/CaptainOffersPage';
 import MatchStatsPage from '../pages/MatchStat/MatchStatsPage';
 import EditProfilePage from '../pages/Profile/EditPlayer/EditProfilePage';
+import MatchReviewsPage from '../pages/Reviews/MatchReviewsPage';
 
 
 
@@ -90,6 +91,8 @@ const AnimatedRoutes = () => {
             <Route path="/captain-offers" element={motionWrap(<CaptainOffersPage />)} />
             <Route path="/matches/:matchId/stats" element={motionWrap(<MatchStatsPage />)} />
             <Route path="/edit-profile" element={motionWrap(<EditProfilePage />)} />
+            <Route path="/match-reviews/:matchId" element={<MatchReviewsPage />} />
+
 
             <Route path="*" element={<Navigate to="/" />} />
           </>
