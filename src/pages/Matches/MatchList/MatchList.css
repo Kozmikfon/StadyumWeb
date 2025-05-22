@@ -1,7 +1,8 @@
 .matches-container {
-  padding: 24px;
-  max-width: 900px;
-  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9fbff;
+  min-height: 100vh;
 }
 
 .matchlist-header {
@@ -12,69 +13,85 @@
 }
 
 .matches-title {
-  font-size: 24px;
-  text-align: left;
+  font-size: 28px;
+  color: #0a2a6c;
 }
 
 .create-match-button {
-  background-color: #28a745;
+  background-color: #2563eb;
   color: white;
-  padding: 8px 14px;
+  padding: 10px 18px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
+  transition: 0.3s;
 }
 
 .create-match-button:hover {
-  background-color: #218838;
+  background-color: #1d4ed8;
 }
 
 .matches-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .match-card {
-  background-color: #fdfdfd;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: 12px;
   padding: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s;
 }
 
-.detail-link {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 6px 12px;
-  background-color: #17a2b8;
-  color: white;
-  border-radius: 4px;
-  text-decoration: none;
-  font-size: 14px;
+.match-card:hover {
+  transform: translateY(-4px);
 }
 
-.detail-link:hover {
-  background-color: #117a8b;
+.match-title {
+  font-size: 20px;
+  color: #1e40af;
+  margin-bottom: 10px;
 }
+
+.match-info {
+  font-size: 15px;
+  color: #444;
+}
+
 .match-actions {
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
-  gap: 10px;
-  flex-direction: row;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .btn-blue {
-  background-color: #1976d2;
-  color: white;
-  padding: 8px 12px;
+  background-color: #3b82f6;
   border: none;
+  padding: 8px 12px;
+  color: white;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
 
 .btn-blue:hover {
-  background-color: #1565c0;
+  background-color: #2563eb;
+}
+
+.btn-outline {
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.btn-outline:hover {
+  background-color: #e0eaff;
 }

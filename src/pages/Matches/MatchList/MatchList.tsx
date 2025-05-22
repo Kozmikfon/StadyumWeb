@@ -35,28 +35,28 @@ const MatchList = () => {
   return (
     <div className="matches-container">
       <div className="matchlist-header">
-        <h2 className="matches-title">Maç Listesi</h2>
+        <h2 className="matches-title">🏟️ Maç Listesi</h2>
         <Link to="/matches/create" className="create-match-button">
-          + Yeni Maç Oluştur
+          ➕ Yeni Maç Oluştur
         </Link>
       </div>
 
       <div className="matches-grid">
         {matches
-          .filter(match => new Date(match.matchDate) > new Date()) // 👈 filtre eklendi
+          .filter(match => new Date(match.matchDate) > new Date())
           .map((match) => (
             <div key={match.id} className="match-card">
-              <h3>{match.team1?.name} vs {match.team2?.name}</h3>
-              <p><strong>Saha:</strong> {match.fieldName}</p>
-              <p><strong>Tarih:</strong> {new Date(match.matchDate).toLocaleString('tr-TR')}</p>
+              <h3 className="match-title">{match.team1?.name} vs {match.team2?.name}</h3>
+              <p className="match-info"><strong>Saha:</strong> {match.fieldName}</p>
+              <p className="match-info"><strong>Tarih:</strong> {new Date(match.matchDate).toLocaleString('tr-TR')}</p>
 
               <div className="match-actions">
-                <Link to={`/matches/${match.id}`} className="detail-link">
+                <Link to={`/matches/${match.id}`} className="btn-outline">
                   Detay
                 </Link>
 
                 <Link to={`/send-offer?matchId=${match.id}`}>
-                  <button className="btn-blue">➕ Maça Teklif Gönder</button>
+                  <button className="btn-blue">🎯 Teklif Gönder</button>
                 </Link>
               </div>
             </div>
