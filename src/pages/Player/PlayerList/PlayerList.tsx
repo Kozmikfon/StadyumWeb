@@ -37,29 +37,40 @@ const PlayerList = () => {
 
   return (
     <div className="players-container">
-      <h2 className="players-title">Oyuncular</h2>
-      <div className="players-grid">
-        {players.map((player) => (
-          <div className="player-card" key={player.id}>
-            <h3>{player.firstName} {player.lastName}</h3>
-            <p><strong>Pozisyon:</strong> {player.position}</p>
-            <p><strong>Yetenek:</strong> {player.skillLevel}</p>
-            <p><strong>Puan:</strong> {player.rating}</p>
-            <p><strong>Takım:</strong> {player.teamName || 'Yok'}</p>
-
-            <div className="player-actions">
-              <Link to={`/players/${player.id}`} className="detail-link">
-                Detay
-              </Link>
-
-              <Link to={`/send-offer/${player.id}`}>
-  <button className="btn-green">➕ Oyuncuya Teklif Gönder</button>
-</Link>
-            </div>
-          </div>
+  <h2 className="players-title">🏅 Oyuncular (Puan Sıralı)</h2>
+  <table className="player-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Oyuncu</th>
+        <th>Pozisyon</th>
+        <th>Yetenek</th>
+        <th>Puan</th>
+        <th>Takım</th>
+        <th>İşlem</th>
+      </tr>
+    </thead>
+    <tbody>
+      {players
+        .sort((a, b) => b.rating - a.rating) // Yüksekten düşüğe sıralama
+        .map((player, index) => (
+          <tr key={player.id}>
+            <td>{index + 1}</td>
+            <td>{player.firstName} {player.lastName}</td>
+            <td>{player.position}</td>
+            <td>{player.skillLevel}</td>
+            <td>{player.rating}</td>
+            <td>{player.teamName || 'Yok'}</td>
+            <td>
+              <Link to={`/players/${player.id}`} className="table-btn">Detay</Link>
+              <Link to={`/send-offer/${player.id}`} className="table-btn-green">➕ Teklif</Link>
+            </td>
+          </tr>
         ))}
-      </div>
-    </div>
+    </tbody>
+  </table>
+</div>
+
   );
 };
 

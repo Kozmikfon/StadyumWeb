@@ -3,6 +3,14 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './PlayerDetailPage.css';
 
+interface PlayerStat {
+  goals: number;
+  assists: number;
+  yellowCards: number;
+  redCards: number;
+  matchesPlayed: number;
+}
+
 interface Team {
   name: string;
 }
@@ -13,8 +21,12 @@ interface Player {
   lastName: string;
   email: string;
   position: string;
-  skillLevel: string;
+  skillLevel: number;
+  rating: number;
+  age: number;
+  nationality: string;
   team?: Team;
+  stats?: PlayerStat;
 }
 
 const PlayerDetailPage: React.FC = () => {
@@ -38,13 +50,25 @@ const PlayerDetailPage: React.FC = () => {
 
   return (
     <div className="player-detail">
-      <h2>
-        {player.firstName} {player.lastName}
-      </h2>
+      <h2>{player.firstName} {player.lastName}</h2>
       <p><strong>Email:</strong> {player.email}</p>
+      <p><strong>Yaş:</strong> {player.age}</p>
+      <p><strong>Uyruk:</strong> {player.nationality}</p>
       <p><strong>Pozisyon:</strong> {player.position}</p>
-      <p><strong>Seviye:</strong> {player.skillLevel}</p>
+      <p><strong>Yetenek Seviyesi:</strong> {player.skillLevel}</p>
+      <p><strong>Puan:</strong> {player.rating}</p>
       <p><strong>Takım:</strong> {player.team?.name || 'Yok'}</p>
+
+      {player.stats && (
+        <div className="player-stats">
+          <h3>📊 Sezon İstatistikleri</h3>
+          <p><strong>Maç:</strong> {player.stats.matchesPlayed}</p>
+          <p><strong>Gol:</strong> {player.stats.goals}</p>
+          <p><strong>Asist:</strong> {player.stats.assists}</p>
+          <p><strong>Sarı Kart:</strong> {player.stats.yellowCards}</p>
+          <p><strong>Kırmızı Kart:</strong> {player.stats.redCards}</p>
+        </div>
+      )}
     </div>
   );
 };

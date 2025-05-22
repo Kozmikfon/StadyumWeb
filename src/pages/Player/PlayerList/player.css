@@ -1,77 +1,123 @@
+/* Genel yapı */
 .players-container {
-  padding: 40px 20px;
-  max-width: 1200px;
-  margin: auto;
+  padding: 40px;
+  background: linear-gradient(to bottom right, #f0f4f8, #d9e2ec);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .players-title {
-  font-size: 32px;
-  font-weight: bold;
-  color: darkred;
   text-align: center;
+  font-size: 32px;
   margin-bottom: 30px;
+  color: #1f2937;
+  font-weight: bold;
+  border-bottom: 2px solid #3b82f6;
+  display: inline-block;
+  padding-bottom: 10px;
 }
 
+/* Grid sistemi */
 .players-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+  gap: 25px;
 }
 
+/* Kart görünümü */
 .player-card {
   background-color: white;
   border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
+  padding: 25px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .player-card:hover {
-  transform: scale(1.02);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .player-card h3 {
-  color: #333;
+  font-size: 22px;
+  color: #111827;
   margin-bottom: 10px;
 }
 
 .player-card p {
-  font-size: 14px;
-  color: #555;
+  font-size: 15px;
+  color: #374151;
   margin: 5px 0;
 }
+
+/* Buton ve link stilleri */
+.player-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .detail-link {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 6px 12px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 4px;
   text-decoration: none;
-  font-size: 14px;
+  color: #2563eb;
+  font-weight: bold;
+  transition: color 0.2s;
 }
 
 .detail-link:hover {
-  background-color: #0056b3;
-}
-.player-actions {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-top: 10px;
+  color: #1d4ed8;
 }
 
 .btn-green {
-  background-color: #4caf50;
+  background-color: #10b981;
   color: white;
-  padding: 8px 12px;
   border: none;
-  border-radius: 6px;
-  font-weight: bold;
+  padding: 10px 14px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
   transition: background-color 0.3s ease;
 }
 
 .btn-green:hover {
-  background-color: #388e3c;
+  background-color: #059669;
+}
+.player-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.player-table th,
+.player-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.player-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.table-btn {
+  background-color: #1976D2;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.table-btn-green {
+  background-color: #2E7D32;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
 }
