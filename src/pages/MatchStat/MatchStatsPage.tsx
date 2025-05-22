@@ -20,6 +20,7 @@ const MatchStatsPage = () => {
   const [stats, setStats] = useState<MatchStat[]>([]);
   const [loading, setLoading] = useState(true);
   const [playerId, setPlayerId] = useState<number | null>(null);
+  const [matchEnded, setMatchEnded] = useState(false);
 
   const [formData, setFormData] = useState({
     id: 0,
@@ -42,6 +43,17 @@ const MatchStatsPage = () => {
     }
   };
 
+  const checkMatchEnded = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5275/api/Matches/${matchId}`);
+      const matchDate = new Date(res.data.matchDate);
+      const now = new Date();
+      setMatchEnded(matchDate < now);
+    } catch (err) {
+      console.error("❌ Maç bilgisi alınamadı:", err);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -52,6 +64,7 @@ const MatchStatsPage = () => {
 
     if (matchId) {
       fetchStats();
+      checkMatchEnded();
     }
   }, [matchId]);
 
@@ -156,24 +169,30 @@ const MatchStatsPage = () => {
         </table>
       )}
 
-      <h3>{editMode ? '🛠 Düzenle' : '➕ Yeni Ekle'}</h3>
-      <form onSubmit={handleSubmit} className="stat-form">
-        <label>Gol:</label>
-        <input type="number" name="goals" value={formData.goals} onChange={handleInputChange} min={0} />
+      {matchEnded && (
+        <>
+          <h3>{editMode ? '🛠 Düzenle' : '➕ Yeni Ekle'}</h3>
+          <form onSubmit={handleSubmit} className="stat-form">
+            <label>Gol:</label>
+            <input type="number" name="goals" value={formData.goals} onChange={handleInputChange} min={0} />
 
-        <label>Asist:</label>
-        <input type="number" name="assists" value={formData.assists} onChange={handleInputChange} min={0} />
+            <label>Asist:</label>
+            <input type="number" name="assists" value={formData.assists} onChange={handleInputChange} min={0} />
 
-        <label>Sarı Kart:</label>
-        <input type="number" name="yellowCards" value={formData.yellowCards} onChange={handleInputChange} min={0} />
+            <label>Sarı Kart:</label>
+            <input type="number" name="yellowCards" value={formData.yellowCards} onChange={handleInputChange} min={0} />
 
-        <label>Kırmızı Kart:</label>
-        <input type="number" name="redCards" value={formData.redCards} onChange={handleInputChange} min={0} />
+            <label>Kırmızı Kart:</label>
+            <input type="number" name="redCards" value={formData.redCards} onChange={handleInputChange} min={0} />
 
-        <button type="submit" className="submit-btn">
-          {editMode ? 'Güncelle' : 'Ekle'}
-        </button>
-      </form>
+            <button type="submit" className="submit-btn">
+              {editMode ? 'Güncelle' : 'Ekle'}
+            </button>
+          </form>
+        </>
+      )}
+
+      {!matchEnded && <p style={{ color: 'gray', marginTop: '1rem' }}>Maç tamamlanmadan istatistik eklenemez.</p>}
     </div>
   );
 };
