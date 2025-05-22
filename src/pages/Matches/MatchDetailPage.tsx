@@ -195,22 +195,34 @@ setPlayerId(parsedPlayerId);
 
       <h3>🗣️ Son Yorumlar</h3>
       <ul className="review-list">
-        {latestReviews.length === 0 ? (
-          <li>Bu maça henüz yorum yapılmadı.</li>
-        ) : (
-          latestReviews.map((review) => (
-            <li key={review.id}>
-              <strong>⭐ {review.rating}</strong> - {review.comment}
-              <span style={{ marginLeft: '10px' }}>
-                <button onClick={() => handleLikeToggle(review.id)}>
-                  {likedStates[review.id] ? '❤️ Beğendin' : '🤍 Beğen'}
-                </button>
-                ({likeCounts[review.id] || 0})
-              </span>
-            </li>
-          ))
-        )}
-      </ul>
+  {latestReviews.length === 0 ? (
+    <li>Bu maça henüz yorum yapılmadı.</li>
+  ) : (
+    latestReviews.map((review) => (
+      <li key={review.id}>
+        <strong>⭐ {review.rating}</strong> - {review.comment}
+        <span style={{ marginLeft: '10px', display: 'inline-flex', alignItems: 'center' }}>
+          <button
+            onClick={() => handleLikeToggle(review.id)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '18px',
+              paddingRight: '6px',
+            }}
+          >
+            {likedStates[review.id] ? '❤️' : '🤍'}
+          </button>
+          <span style={{ fontSize: '14px' }}>
+            {likeCounts[review.id] || 0}
+          </span>
+        </span>
+      </li>
+    ))
+  )}
+</ul>
+
 
       <button
         className="review-button"

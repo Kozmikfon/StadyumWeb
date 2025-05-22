@@ -143,13 +143,25 @@ const reviewerId = Array.isArray(rawPlayerId) ? Number(rawPlayerId[0]) : Number(
         <p>Henüz yorum yapılmamış.</p>
       ) : (
         reviews.map(r => (
-          <div key={r.id} className="review-card">
-            <p><strong>⭐ {r.rating}</strong></p>
-            <p>{r.comment}</p>
-            <button onClick={() => handleLike(r.id)}>
-              {liked[r.id] ? '❤️ Beğendin' : '🤍 Beğen'} ({likeCount[r.id] || 0})
-            </button>
-          </div>
+  <div key={r.id} className="review-card">
+    <p><strong>⭐ {r.rating}</strong></p>
+    <p>{r.comment}</p>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <button
+        onClick={() => handleLike(r.id)}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '18px',
+          paddingRight: '6px',
+        }}
+      >
+        {liked[r.id] ? '❤️' : '🤍'}
+      </button>
+      <span style={{ fontSize: '14px' }}>{likeCount[r.id] || 0}</span>
+    </div>
+  </div>
         ))
       )}
     </div>
