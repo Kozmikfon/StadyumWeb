@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import './PlayerDetailPage.css';
 
@@ -13,6 +13,12 @@ interface PlayerStat {
 
 interface Team {
   name: string;
+}
+
+interface Match {
+  id: number;
+  fieldName: string;
+  matchDate: string;
 }
 
 interface Player {
@@ -30,6 +36,7 @@ interface Player {
 const PlayerDetailPage: React.FC = () => {
   const { id } = useParams();
   const [player, setPlayer] = useState<Player | null>(null);
+  const [matches, setMatches] = useState<Match[]>([]);
 
   useEffect(() => {
     const fetchPlayer = async () => {
@@ -41,7 +48,19 @@ const PlayerDetailPage: React.FC = () => {
       }
     };
 
-    fetchPlayer();
+    const fetchMatches = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5275/api/MatchStats/player-matches/${id}`);
+        setMatches(response.data);
+      } catch (error) {
+        console.error('Oyuncunun maçları alınamadı:', error);
+      }
+    };
+
+    if (id) {
+      fetchPlayer();
+      fetchMatches();
+    }
   }, [id]);
 
   if (!player) return <p className="player-loading">Yükleniyor...</p>;
@@ -78,6 +97,21 @@ const PlayerDetailPage: React.FC = () => {
               </tr>
             </tbody>
           </table>
+        </div>
+      )}
+
+      {matches.length > 0 && (
+        <div className="player-matches">
+          <h3>📅 Oynadığı Maçlar</h3>
+          <ul className="match-list">
+            {matches.map((match) => (
+              <li key={match.id}>
+                <Link to={`/matches/${match.id}`}>
+                  {new Date(match.matchDate).toLocaleDateString()} - {match.fieldName}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
