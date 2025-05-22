@@ -37,42 +37,52 @@ const MatchDetailPage = () => {
   const [acceptedOffers, setAcceptedOffers] = useState<Offer[]>([]);
   const [playerId, setPlayerId] = useState<number | null>(null);
   const [playerStats, setPlayerStats] = useState<{ [id: number]: PlayerStats }>({});
+  const [latestReviews, setLatestReviews] = useState<any[]>([]);
+  const [likeCounts, setLikeCounts] = useState<{ [key: number]: number }>({});
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!matchId) {
-        console.error("❌ matchId URL'den alınamadı.");
-        return;
-      }
+  const fetchData = async () => {
+    if (!matchId) return;
 
-      const token = localStorage.getItem('token');
-      const decoded: any = jwtDecode(token || '');
-      setPlayerId(decoded.playerId);
+    const token = localStorage.getItem('token');
+    const decoded: any = jwtDecode(token || '');
+    setPlayerId(decoded.playerId);
 
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+    const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      try {
-        const [matchRes, offersRes, acceptedRes] = await Promise.all([
-          axios.get(`http://localhost:5275/api/Matches/${matchId}`, config),
-          axios.get(`http://localhost:5275/api/Offers`, config),
-          axios.get(`http://localhost:5275/api/Offers/accepted-by-match/${matchId}`, config),
-        ]);
+    const [matchRes, offersRes, acceptedRes, reviewsRes] = await Promise.all([
+      axios.get(`http://localhost:5275/api/Matches/${matchId}`, config),
+      axios.get(`http://localhost:5275/api/Offers`, config),
+      axios.get(`http://localhost:5275/api/Offers/accepted-by-match/${matchId}`, config),
+      axios.get(`http://localhost:5275/api/Reviews`, config),
+    ]);
 
-        setMatch(matchRes.data);
-        setOffers(offersRes.data.filter((o: Offer) => o.matchId === parseInt(matchId)));
-        setAcceptedOffers(acceptedRes.data);
+    setMatch(matchRes.data);
+    setOffers(offersRes.data.filter((o: Offer) => o.matchId === parseInt(matchId)));
+    setAcceptedOffers(acceptedRes.data);
 
-        for (const offer of acceptedRes.data) {
-          const stats = await axios.get(`http://localhost:5275/api/Players/stats/${offer.receiverId}`);
-          setPlayerStats((prev) => ({ ...prev, [offer.receiverId]: stats.data }));
-        }
-      } catch (err) {
-        console.error("❌ Maç detayları alınamadı:", err);
-      }
-    };
+    // Oyuncu istatistikleri
+    for (const offer of acceptedRes.data) {
+      const stats = await axios.get(`http://localhost:5275/api/Players/stats/${offer.receiverId}`);
+      setPlayerStats((prev) => ({ ...prev, [offer.receiverId]: stats.data }));
+    }
 
-    fetchData();
-  }, [matchId]);
+    // Son yorumlar ve beğeni sayıları
+    const matchReviews = reviewsRes.data.filter((r: any) => r.matchId === parseInt(matchId));
+    setLatestReviews(matchReviews.slice(-3)); // Son 3 yorum
+
+    const likeMap: any = {};
+    for (const review of matchReviews) {
+      const likeCount = await axios.get(`http://localhost:5275/api/CommentLikes/count/${review.id}`);
+      likeMap[review.id] = likeCount.data;
+    }
+    setLikeCounts(likeMap);
+  };
+
+  fetchData();
+}, [matchId]);
+
 
   const translateStatus = (status: string) => {
     switch (status) {
@@ -147,13 +157,28 @@ const MatchDetailPage = () => {
         ))}
         {acceptedOffers.length === 0 && <li>Henüz kabul edilen oyuncu yok.</li>}
       </ul>
+      <h3>🗣️ Son Yorumlar</h3>
+<ul className="review-list">
+  {latestReviews.length === 0 ? (
+    <li>Bu maça henüz yorum yapılmadı.</li>
+  ) : (
+    latestReviews.map((review) => (
+      <li key={review.id}>
+        <strong>⭐ {review.rating}</strong> - {review.comment}
+        <span style={{ marginLeft: '10px' }}>❤️ {likeCounts[review.id] || 0}</span>
+      </li>
+    ))
+  )}
+</ul>
+
 
       <button
-        className="review-button"
-        onClick={() => navigate(`/match-reviews/${match.id}`)}
-      >
-        📝 Yorum Yap & Görüntüle
-      </button>
+  className="review-button"
+  onClick={() => navigate(`/match-reviews/${match.id}`)}
+>
+  📝 Yorum Yap & Görüntüle
+</button>
+
     </div>
   );
 };

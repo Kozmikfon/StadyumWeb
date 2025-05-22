@@ -24,8 +24,14 @@ const MatchReviewsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
-      const decoded: any = jwtDecode(token || '');
-      setPlayerId(decoded.playerId);
+      if (!token) return;
+
+      const decoded: any = jwtDecode(token);
+let rawPlayerId = decoded?.playerId;
+const playerId = Array.isArray(rawPlayerId) ? Number(rawPlayerId[0]) : Number(rawPlayerId);
+
+
+      setPlayerId(playerId);
 
       const res = await axios.get('http://localhost:5275/api/Reviews');
       const matchReviews = res.data.filter((r: Review) => r.matchId === Number(matchId));
@@ -36,7 +42,7 @@ const MatchReviewsPage = () => {
 
       for (const review of matchReviews) {
         const [likedRes, countRes] = await Promise.all([
-          axios.get(`http://localhost:5275/api/CommentLikes/has-liked/${review.id}/${decoded.playerId}`),
+          axios.get(`http://localhost:5275/api/CommentLikes/has-liked/${review.id}/${playerId}`),
           axios.get(`http://localhost:5275/api/CommentLikes/count/${review.id}`),
         ]);
         likeStates[review.id] = likedRes.data;
@@ -51,27 +57,53 @@ const MatchReviewsPage = () => {
   }, [matchId]);
 
   const handleSubmit = async () => {
-    if (!comment.trim()) return;
-
     const token = localStorage.getItem('token');
-    await axios.post('http://localhost:5275/api/Reviews', {
-      matchId: Number(matchId),
-      reviewerId: playerId,
-      reviewedUserId: null,
-      reviewedTeamId: null,
-      comment,
-      rating,
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    if (!token) {
+      alert("Giriş yapmadınız.");
+      return;
+    }
 
-    setComment('');
-    setRating(3);
-    window.location.reload();
+    const decoded: any = jwtDecode(token);
+    const rawPlayerId = decoded?.playerId;
+const reviewerId = Array.isArray(rawPlayerId) ? Number(rawPlayerId[0]) : Number(rawPlayerId);
+
+    
+
+    if (!reviewerId || isNaN(reviewerId) || !matchId || !comment.trim() || rating < 1 || rating > 5) {
+      alert("Lütfen geçerli bir yorum, puan ve giriş yapmış kullanıcı bilgisi girin.");
+      console.log("Hatalı veri:", { reviewerId, matchId, comment, rating });
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:5275/api/Reviews', {
+        matchId: Number(matchId),
+        reviewerId,
+        reviewedUserId: null,
+        reviewedTeamId: null,
+        comment: comment.trim(),
+        rating
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      alert("✅ Yorum gönderildi.");
+      setComment('');
+      setRating(3);
+      window.location.reload();
+    } catch (error) {
+      console.error("❌ Yorum gönderilemedi:", error);
+      alert("Yorum gönderilirken hata oluştu.");
+    }
   };
 
   const handleLike = async (reviewId: number) => {
     const token = localStorage.getItem('token');
+    if (!token || !playerId) return;
+
     await axios.post('http://localhost:5275/api/CommentLikes', {
       reviewId,
       playerId,
@@ -95,7 +127,7 @@ const MatchReviewsPage = () => {
       <div className="review-form">
         <label>Puan: </label>
         <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
-          {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+          {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
         </select>
 
         <textarea

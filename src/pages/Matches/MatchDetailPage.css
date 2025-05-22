@@ -97,3 +97,16 @@
     font-size: 14px;
   }
 }
+.review-list {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  list-style: none;
+  padding-left: 0;
+}
+
+.review-list li {
+  padding: 10px;
+  background-color: #f4f4f4;
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
