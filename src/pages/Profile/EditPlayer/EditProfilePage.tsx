@@ -3,83 +3,82 @@ import axios from 'axios';
 import './EditProfile.css';
 
 interface Player {
-  firstName: string;
-  lastName: string;
   email: string;
   position: string;
-  skillLevel: number;
-  rating: number;
 }
 
 const EditProfilePage = () => {
-  const [player, setPlayer] = useState<Player | null>(null);
+  const [playerId, setPlayerId] = useState<number | null>(null);
   const [formData, setFormData] = useState<Player>({
-    firstName: '',
-    lastName: '',
     email: '',
-    position: '',
-    skillLevel: 1,
-    rating: 0
+    position: ''
   });
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5275/api/Players/me', {
+        if (!token) return;
+
+        const decoded: any = JSON.parse(atob(token.split('.')[1]));
+        const id = Array.isArray(decoded.playerId) ? decoded.playerId[0] : decoded.playerId;
+        setPlayerId(id);
+
+        const res = await axios.get(`http://localhost:5275/api/Players/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setPlayer(res.data);
-        setFormData(res.data);
+
+        setFormData({
+          email: res.data.email || '',
+          position: res.data.position || ''
+        });
       } catch (err) {
         console.error('Profil bilgisi alınamadı:', err);
       }
     };
+
     fetchProfile();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: name === 'skillLevel' ? Number(value) : value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5275/api/Players/update-profile', formData, {
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      if (!token || !playerId) return;
+
+      await axios.put(`http://localhost:5275/api/Players/${playerId}`, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       });
-      alert('✅ Profil güncellendi.');
+
+      alert('✅ Profiliniz güncellendi.');
     } catch (err) {
       console.error('Güncelleme hatası:', err);
-      alert('❌ Profil güncellenemedi.');
+      alert('❌ Güncelleme başarısız. Lütfen geçerli bilgileri girin.');
     }
   };
 
-  if (!player) return <p>Yükleniyor...</p>;
-
   return (
     <div className="edit-profile-container">
-      <h2>👤 Profili Düzenle</h2>
+      <h2>📧 Profilini Güncelle</h2>
       <form className="edit-form" onSubmit={handleSubmit}>
-        <label>Ad:</label>
-        <input name="firstName" value={formData.firstName} onChange={handleChange} required />
-
-        <label>Soyad:</label>
-        <input name="lastName" value={formData.lastName} onChange={handleChange} required />
-
         <label>Email:</label>
         <input name="email" value={formData.email} onChange={handleChange} required />
 
         <label>Pozisyon:</label>
-        <input name="position" value={formData.position} onChange={handleChange} required />
-
-        <label>Yetenek Seviyesi (1-5):</label>
-        <select name="skillLevel" value={formData.skillLevel} onChange={handleChange}>
-          {[1, 2, 3, 4, 5].map((level) => (
-            <option key={level} value={level}>{level}</option>
-          ))}
+        <select name="position" value={formData.position} onChange={handleChange} required>
+          <option value="">Pozisyon seçin</option>
+          <option value="Kaleci">Kaleci</option>
+          <option value="Defans">Defans</option>
+          <option value="Orta Saha">Orta Saha</option>
+          <option value="Forvet">Forvet</option>
         </select>
 
         <button type="submit" className="save-btn">Kaydet</button>
