@@ -1,37 +1,60 @@
 .player-detail {
-  max-width: 800px;
+  max-width: 900px;
   margin: 40px auto;
   padding: 30px;
-  background-color: #fdfdfd;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', sans-serif;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  font-family: 'Poppins', sans-serif;
+  color: #212121;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Profil başlığı */
 .player-detail h2 {
-  font-size: 28px;
-  margin-bottom: 20px;
+  font-size: 30px;
   color: #1976d2;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #1976d2;
-  padding-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
+/* Avatar */
+.player-avatar {
+  width: 60px;
+  height: 60px;
+  background-color: #1976d2;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 26px;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Kişisel bilgiler */
 .player-detail p {
   font-size: 16px;
-  margin: 8px 0;
+  margin: 6px 0;
   line-height: 1.5;
 }
-
 .player-detail strong {
-  color: #444;
+  color: #555;
 }
 
+/* İstatistik kutusu */
 .player-stats {
-  margin-top: 30px;
+  margin-top: 40px;
   padding: 20px;
   background-color: #e3f2fd;
-  border-left: 4px solid #1976d2;
-  border-radius: 10px;
+  border-left: 5px solid #1976d2;
+  border-radius: 12px;
 }
 
 .player-stats h3 {
@@ -40,9 +63,118 @@
   color: #0d47a1;
 }
 
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.stats-table th {
+  background-color: #1976d2;
+  color: white;
+  font-weight: 600;
+}
+
+.stats-table td {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Maç listesi */
+.player-matches {
+  margin-top: 40px;
+}
+
+.player-matches h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #1565c0;
+}
+
+.match-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.match-list li {
+  background-color: #f1f8e9;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.match-list li:hover {
+  background-color: #dcedc8;
+}
+
+.match-list a {
+  text-decoration: none;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
 .player-loading {
   text-align: center;
   margin-top: 100px;
   font-size: 20px;
   color: #666;
+}
+.top-match-box {
+  margin-top: 40px;
+  padding: 20px;
+  background: #fff3e0;
+  border-left: 5px solid #fb8c00;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.top-match-box h3 {
+  color: #e65100;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.top-match-box p {
+  margin: 6px 0;
+  font-size: 15px;
+  color: #444;
+}
+
+.top-match-box .detail-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: 600;
+  color: #e65100;
+  text-decoration: underline;
+}
+.player-stats-advanced {
+  margin-top: 30px;
+  padding: 18px;
+  background-color: #e8f5e9;
+  border-left: 5px solid #43a047;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.player-stats-advanced h3 {
+  color: #2e7d32;
+  margin-bottom: 12px;
+}
+
+.player-stats-advanced ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.player-stats-advanced li {
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #333;
 }
