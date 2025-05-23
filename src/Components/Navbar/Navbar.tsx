@@ -28,7 +28,7 @@ const Navbar = () => {
 
   return (
     <header className="home-navbar">
-      <div className="logo">Halı Saha</div>
+      <div className="logo">Stadyum</div>
       <nav className="nav-links">
         <a onClick={() => navigate('/')}>Anasayfa</a>
         <a onClick={() => navigate('/teams')}>Takımlar</a>

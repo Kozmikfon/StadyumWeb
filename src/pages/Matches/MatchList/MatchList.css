@@ -1,8 +1,24 @@
 .matches-container {
   padding: 20px;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f9fbff;
+  background-color: #f0f4fa;
   min-height: 100vh;
+}
+
+.matchlist-banner {
+  width: 100%;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.matchlist-banner-image {
+  width: 100%;
+  height: auto;
+  max-height: 250px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
 }
 
 .matchlist-header {
@@ -28,70 +44,88 @@
 }
 
 .create-match-button:hover {
-  background-color: #1d4ed8;
+  background-color: #1e40af;
 }
 
 .matches-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
 }
 
 .match-card {
   background-color: white;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease-in-out;
 }
 
 .match-card:hover {
-  transform: translateY(-4px);
+  transform: scale(1.02);
 }
 
 .match-title {
   font-size: 20px;
-  color: #1e40af;
   margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.team-name {
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.vs-text {
+  margin: 0 10px;
+  color: #64748b;
 }
 
 .match-info {
-  font-size: 15px;
-  color: #444;
+  color: #334155;
+  margin: 5px 0;
 }
 
 .match-actions {
-  margin-top: 12px;
+  margin-top: 15px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.btn-blue {
-  background-color: #3b82f6;
-  border: none;
-  padding: 8px 12px;
-  color: white;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.btn-blue:hover {
-  background-color: #2563eb;
+  gap: 10px;
 }
 
 .btn-outline {
-  border: 1px solid #2563eb;
+  border: 2px solid #2563eb;
   color: #2563eb;
   padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: bold;
+  border-radius: 5px;
   text-decoration: none;
-  transition: 0.3s;
+  font-weight: 500;
+  transition: 0.2s;
 }
 
 .btn-outline:hover {
-  background-color: #e0eaff;
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-blue {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.btn-blue:hover {
+  background-color: #059669;
+}
+
+.no-matches-text {
+  margin-top: 50px;
+  text-align: center;
+  color: #64748b;
+  font-size: 18px;
 }

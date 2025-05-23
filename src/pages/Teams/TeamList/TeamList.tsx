@@ -31,6 +31,7 @@ const TeamList = () => {
   const [teamPlayers, setTeamPlayers] = useState<Player[]>([]);
   const [selectedCaptainId, setSelectedCaptainId] = useState<number | null>(null);
   const [teamIdForCaptainChange, setTeamIdForCaptainChange] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
 
 const fetchData = async () => {
@@ -226,6 +227,10 @@ const assignNewCaptain = async () => {
     alert(`❌ ${message}`);
   }
 };
+const getColorFromName = (name: string) => {
+  const colors = ["#1e88e5", "#8e24aa", "#43a047", "#fb8c00", "#d32f2f"];
+  return colors[name.length % colors.length];
+};
 
 
 
@@ -235,56 +240,68 @@ const assignNewCaptain = async () => {
   return (
   <div className="team-page">
     <h2>Takımlar</h2>
-
+    <input
+  type="text"
+  placeholder="🔍 Takım ara..."
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  className="search-input"
+/>
     <button
-      className="create-team-btn"
-      onClick={() => setShowModal(true)}
-      disabled={!!currentTeamId || hasRecentMatch}
-      title={
-        hasRecentMatch
-          ? "Takımınızın maçı olduğu için yeni takım oluşturamazsınız."
-          : currentTeamId
-          ? "Zaten bir takımdasınız. Önce ayrılmalısınız."
-          : ""
-      }
-    >
-      + Yeni Takım Oluştur
-    </button>
+  className="create-team-btn"
+  onClick={() => {
+    if (hasRecentMatch) {
+      alert("⛔ Takımınızın son 12 saatte maçı olduğu için yeni takım oluşturamazsınız.");
+      return;
+    }
+    if (currentTeamId) {
+      alert("⚠️ Zaten bir takıma aitsiniz. Yeni takım kurmak için önce ayrılmalısınız.");
+      return;
+    }
+    setShowModal(true); // Sadece uygun durumdaysa modal açılır
+  }}
+>
+  + Yeni Takım Oluştur
+</button>
 
-    {(!!currentTeamId || hasRecentMatch) && (
-      <p className="warning-msg">
-        {hasRecentMatch
-          ? "⛔ Takımınızın son 12 saatte maçı olduğu için yeni takım oluşturamazsınız."
-          : "⚠️ Zaten bir takıma aitsiniz. Yeni takım kurmak için önce ayrılmalısınız."}
-      </p>
-    )}
+
+    
 
     <div className="team-grid">
-      {teams.map((team) => {
-        const isPlayerInTeam = team.players.some(p => p.id === playerId);
+      {teams
+  .filter((team) =>
+    team.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+  .map((team) => {
+    const isPlayerInTeam = team.players.some(p => p.id === playerId);
+    return (
+      <div className="team-card" key={team.id}>
+        <div
+          className="team-icon"
+          style={{ backgroundColor: getColorFromName(team.name) }}
+        >
+          {team.name[0].toUpperCase()}
+        </div>
+        <h3>{team.name}</h3>
+        <p>🧑‍✈️ Kaptan: {team.captain?.firstName || 'Belirlenmemiş'}</p>
+        <p>👥 Oyuncular: {team.players.length}</p>
 
-        return (
-          <div className="team-card" key={team.id}>
-            <div className="team-icon">{team.name[0]}</div>
-            <h3>{team.name}</h3>
-            <p>🧑‍✈️ Kaptan: {team.captain?.firstName || 'Belirlenmemiş'}</p>
-            <p>👥 Oyuncular: {team.players.length}</p>
-
-            {isPlayerInTeam ? (
-              <>
-                <button className="joined-btn" disabled>Katıldınız</button>
-                {team.id === currentTeamId && (
-                  <button className="leave-btn" onClick={handleLeaveTeam}>Takımdan Ayrıl</button>
-                )}
-              </>
-            ) : (
-              <button className="join-btn" onClick={() => handleJoin(team.id)}>Takıma Katıl</button>
+        {isPlayerInTeam ? (
+          <>
+            <button className="joined-btn" disabled>Katıldınız</button>
+            {team.id === currentTeamId && (
+              <button className="leave-btn" onClick={handleLeaveTeam}>Takımdan Ayrıl</button>
             )}
+          </>
+        ) : (
+          <button className="join-btn" onClick={() => handleJoin(team.id)}>Takıma Katıl</button>
+        )}
 
-            <Link to={`/teams/${team.id}`} className="detail-link">Detay</Link>
-          </div>
-        );
-      })}
+        <Link to={`/teams/${team.id}`} className="detail-link">Detay</Link>
+      </div>
+    );
+  })}
+
     </div>
 
     {/* Takım Oluşturma Modalı */}

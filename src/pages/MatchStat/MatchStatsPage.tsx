@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import './MatchStatsPage.css';
+
+interface Match {
+  id: number;
+  fieldName: string;
+  matchDate: string;
+  team1Name: string;
+  team2Name: string;
+}
 
 interface MatchStat {
   id: number;
@@ -16,93 +23,82 @@ interface MatchStat {
 }
 
 const MatchStatsPage = () => {
-  const { matchId } = useParams();
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const [stats, setStats] = useState<MatchStat[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [playerId, setPlayerId] = useState<number | null>(null);
   const [matchEnded, setMatchEnded] = useState(false);
-
-  const [formData, setFormData] = useState({
-    id: 0,
-    goals: 0,
-    assists: 0,
-    yellowCards: 0,
-    redCards: 0,
-  });
-
+  const [loading, setLoading] = useState(false);
+  const [playerId, setPlayerId] = useState<number | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ id: 0, goals: 0, assists: 0, yellowCards: 0, redCards: 0 });
   const [editMode, setEditMode] = useState(false);
 
-  const fetchStats = async () => {
-    try {
-      const res = await axios.get(`http://localhost:5275/api/MatchStats/byMatch/${matchId}`);
-      setStats(res.data);
-    } catch (err) {
-      console.error("❌ İstatistikler alınamadı:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkMatchEnded = async () => {
-    try {
-      const res = await axios.get(`http://localhost:5275/api/Matches/${matchId}`);
-      const matchDate = new Date(res.data.matchDate);
-      const now = new Date();
-      setMatchEnded(matchDate < now);
-    } catch (err) {
-      console.error("❌ Maç bilgisi alınamadı:", err);
-    }
-  };
-
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded: any = jwtDecode(token);
+    const localToken = localStorage.getItem('token');
+    if (localToken) {
+      setToken(localToken);
+      const decoded: any = jwtDecode(localToken);
       const id = Array.isArray(decoded.playerId) ? decoded.playerId[0] : decoded.playerId;
       setPlayerId(id);
     }
 
-    if (matchId) {
-      fetchStats();
-      checkMatchEnded();
+    axios.get('http://localhost:5275/api/Matches')
+      .then(res => {
+        const pastMatches = res.data.filter((m: Match) => new Date(m.matchDate) < new Date());
+        setMatches(pastMatches);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (selectedMatchId) {
+      setLoading(true);
+      axios.get(`http://localhost:5275/api/MatchStats/byMatch/${selectedMatchId}`)
+        .then(res => setStats(res.data))
+        .finally(() => setLoading(false));
+
+      axios.get(`http://localhost:5275/api/Matches/${selectedMatchId}`)
+        .then(res => setMatchEnded(new Date(res.data.matchDate) < new Date()));
     }
-  }, [matchId]);
+  }, [selectedMatchId]);
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: Number(value) }));
+    setFormData(prev => ({ ...prev, [name]: Number(value) }));
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    if (!matchId || !playerId) return;
+    if (!selectedMatchId || !playerId || !token) return;
 
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      };
+
       if (editMode) {
         await axios.put(`http://localhost:5275/api/MatchStats/${formData.id}`, {
-          matchId: Number(matchId),
+          matchId: selectedMatchId,
           playerId,
-          goals: formData.goals,
-          assists: formData.assists,
-          yellowCards: formData.yellowCards,
-          redCards: formData.redCards,
-        });
+          ...formData,
+        }, config);
         alert('✅ İstatistik güncellendi.');
       } else {
         await axios.post('http://localhost:5275/api/MatchStats', {
-          matchId: Number(matchId),
+          matchId: selectedMatchId,
           playerId,
           ...formData,
-        });
+        }, config);
         alert('✅ İstatistik eklendi.');
       }
-
       setFormData({ id: 0, goals: 0, assists: 0, yellowCards: 0, redCards: 0 });
       setEditMode(false);
-      fetchStats();
+      const res = await axios.get(`http://localhost:5275/api/MatchStats/byMatch/${selectedMatchId}`);
+      setStats(res.data);
     } catch (err) {
-      console.error("❌ Kayıt hatası:", err);
-      alert('İstatistik kaydedilemedi.');
+      alert('❌ Kayıt başarısız.');
     }
   };
 
@@ -119,27 +115,32 @@ const MatchStatsPage = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Bu istatistik silinsin mi?')) return;
-
-    try {
-      await axios.delete(`http://localhost:5275/api/MatchStats/${id}`);
-      alert('🗑 Silindi');
-      fetchStats();
-    } catch (err) {
-      console.error('❌ Silme hatası:', err);
-      alert('Silinemedi');
-    }
+    if (!window.confirm('Silmek istediğine emin misin?')) return;
+    if (!token) return;
+    await axios.delete(`http://localhost:5275/api/MatchStats/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const res = await axios.get(`http://localhost:5275/api/MatchStats/byMatch/${selectedMatchId}`);
+    setStats(res.data);
   };
 
   return (
     <div className="match-stats-container">
       <h2>📊 Maç İstatistikleri</h2>
 
-      {loading ? (
-        <p>Yükleniyor...</p>
-      ) : stats.length === 0 ? (
-        <p>İstatistik bulunamadı.</p>
-      ) : (
+      <label>Maç Seç:</label>
+      <select onChange={(e) => setSelectedMatchId(Number(e.target.value))}>
+        <option value="">-- Maç Seçin --</option>
+        {matches.map(match => (
+          <option key={match.id} value={match.id}>
+            {match.team1Name} vs {match.team2Name} - {new Date(match.matchDate).toLocaleDateString('tr-TR')}
+          </option>
+        ))}
+      </select>
+
+      {loading && <p>Yükleniyor...</p>}
+
+      {selectedMatchId && stats.length > 0 && (
         <table className="stats-table">
           <thead>
             <tr>
@@ -148,11 +149,11 @@ const MatchStatsPage = () => {
               <th>Asist</th>
               <th>Sarı Kart</th>
               <th>Kırmızı Kart</th>
-              <th>İşlemler</th>
+              <th>İşlem</th>
             </tr>
           </thead>
           <tbody>
-            {stats.map((stat) => (
+            {stats.map(stat => (
               <tr key={stat.id}>
                 <td>{stat.playerName}</td>
                 <td>{stat.goals}</td>
@@ -169,30 +170,30 @@ const MatchStatsPage = () => {
         </table>
       )}
 
-      {matchEnded && (
-        <>
+      {selectedMatchId && matchEnded && (
+        <form onSubmit={handleSubmit} className="stat-form">
           <h3>{editMode ? '🛠 Düzenle' : '➕ Yeni Ekle'}</h3>
-          <form onSubmit={handleSubmit} className="stat-form">
-            <label>Gol:</label>
-            <input type="number" name="goals" value={formData.goals} onChange={handleInputChange} min={0} />
+          <label>Gol:</label>
+          <input type="number" name="goals" value={formData.goals} onChange={handleInputChange} min={0} />
 
-            <label>Asist:</label>
-            <input type="number" name="assists" value={formData.assists} onChange={handleInputChange} min={0} />
+          <label>Asist:</label>
+          <input type="number" name="assists" value={formData.assists} onChange={handleInputChange} min={0} />
 
-            <label>Sarı Kart:</label>
-            <input type="number" name="yellowCards" value={formData.yellowCards} onChange={handleInputChange} min={0} />
+          <label>Sarı Kart:</label>
+          <input type="number" name="yellowCards" value={formData.yellowCards} onChange={handleInputChange} min={0} />
 
-            <label>Kırmızı Kart:</label>
-            <input type="number" name="redCards" value={formData.redCards} onChange={handleInputChange} min={0} />
+          <label>Kırmızı Kart:</label>
+          <input type="number" name="redCards" value={formData.redCards} onChange={handleInputChange} min={0} />
 
-            <button type="submit" className="submit-btn">
-              {editMode ? 'Güncelle' : 'Ekle'}
-            </button>
-          </form>
-        </>
+          <button type="submit" className="submit-btn">
+            {editMode ? 'Güncelle' : 'Ekle'}
+          </button>
+        </form>
       )}
 
-      {!matchEnded && <p style={{ color: 'gray', marginTop: '1rem' }}>Maç tamamlanmadan istatistik eklenemez.</p>}
+      {selectedMatchId && !matchEnded && (
+        <p style={{ color: 'gray', marginTop: '1rem' }}>Maç tamamlanmadan istatistik eklenemez.</p>
+      )}
     </div>
   );
 };

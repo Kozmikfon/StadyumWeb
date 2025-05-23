@@ -16,6 +16,8 @@ interface Player {
 
 const PlayerList = () => {
   const [players, setPlayers] = useState<Player[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -38,6 +40,13 @@ const PlayerList = () => {
   return (
     <div className="players-container">
   <h2 className="players-title">🏅 Oyuncular (Puan Sıralı)</h2>
+  <input
+  type="text"
+  placeholder="🔍 Oyuncu ara..."
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  className="search-input"
+/>
   <table className="player-table">
     <thead>
       <tr>
@@ -52,21 +61,25 @@ const PlayerList = () => {
     </thead>
     <tbody>
       {players
-        .sort((a, b) => b.rating - a.rating) // Yüksekten düşüğe sıralama
-        .map((player, index) => (
-          <tr key={player.id}>
-            <td>{index + 1}</td>
-            <td>{player.firstName} {player.lastName}</td>
-            <td>{player.position}</td>
-            <td>{player.skillLevel}</td>
-            <td>{player.rating}</td>
-            <td>{player.teamName || 'Yok'}</td>
-            <td>
-              <Link to={`/players/${player.id}`} className="table-btn">Detay</Link>
-              <Link to={`/send-offer/${player.id}`} className="table-btn-green">➕ Teklif</Link>
-            </td>
-          </tr>
-        ))}
+  .filter((player) =>
+    `${player.firstName} ${player.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+  .sort((a, b) => b.rating - a.rating)
+  .map((player, index) => (
+    <tr key={player.id}>
+      <td>{index + 1}</td>
+      <td>{player.firstName} {player.lastName}</td>
+      <td>{player.position}</td>
+      <td>{player.skillLevel}</td>
+      <td>{player.rating}</td>
+      <td>{player.teamName || 'Yok'}</td>
+      <td>
+        <Link to={`/players/${player.id}`} className="table-btn">Detay</Link>
+        <Link to={`/send-offer/${player.id}`} className="table-btn-green">➕ Teklif</Link>
+      </td>
+    </tr>
+  ))}
+
     </tbody>
   </table>
 </div>
