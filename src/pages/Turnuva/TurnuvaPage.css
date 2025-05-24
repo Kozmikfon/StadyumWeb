@@ -160,3 +160,7 @@ li {
   background: rgba(255, 255, 255, 0.2);
   font-weight: bold;
 }
+.team-card.highlighted {
+  border: 2px solid #43a047;
+  background-color: #e8f5e9;
+}

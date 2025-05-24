@@ -4,9 +4,9 @@ import './ImageSlider.css';
 
 import slide1 from '../assets/slider/top1.jpg';
 import slide2 from '../assets/slider/top5.jpg';
-import slide3 from '../assets/slider/top3.jpg';
+//import slide3 from '../assets/slider/top3.jpg';
 
-const images = [slide1, slide2, slide3];
+const images = [slide1, slide2];
 
 const ImageSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);

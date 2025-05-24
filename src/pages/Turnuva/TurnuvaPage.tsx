@@ -40,6 +40,7 @@ const TurnuvaPage = () => {
   const [showLeaveTeamModal, setShowLeaveTeamModal] = useState(false);
   const [standings, setStandings] = useState<Standing[]>([]);
   const [showMatchModal, setShowMatchModal] = useState(false);
+  const isBeforeTournament = new Date() < new Date('2025-07-15');
 
 
   const fetchData = async () => {
@@ -137,15 +138,17 @@ const TurnuvaPage = () => {
       <p>📅 Turnuva 15 Temmuz'da başlıyor. Katılım ücretsiz. Finalde sürpriz ödüller sizi bekliyor!</p>
 
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <button className="info-btn" onClick={() => setShowModal(true)}>📩 Bilgi Al / Başvur</button>
-        <button className="info-btn" onClick={() => setShowCreateTeamModal(true)}>🛡 Takım Oluştur</button>
-        <button className="info-btn" onClick={() => setShowJoinTeamModal(true)}>👥 Takıma Katıl</button>
-        {currentTeamId && (
-  <button className="info-btn" onClick={() => setShowLeaveTeamModal(true)}>
-    🚪 Takımdan Ayrıl
-  </button>
+        {isBeforeTournament && (
+  <>
+    <button className="info-btn" onClick={() => setShowModal(true)}>📩 Bilgi Al / Başvur</button>
+    <button className="info-btn" onClick={() => setShowCreateTeamModal(true)}>🛡 Takım Oluştur</button>
+    <button className="info-btn" onClick={() => setShowJoinTeamModal(true)}>👥 Takıma Katıl</button>
+    {currentTeamId && (
+      <button className="info-btn" onClick={() => setShowLeaveTeamModal(true)}>🚪 Takımdan Ayrıl</button>
+    )}
+    <button className="info-btn" onClick={() => setShowMatchModal(true)}>➕ Maç Oluştur</button>
+  </>
 )}
-<button className="info-btn" onClick={() => setShowMatchModal(true)}>➕ Maç Oluştur</button>
 
 
       </div>
@@ -155,10 +158,13 @@ const TurnuvaPage = () => {
         <h3>⚽ Katılan Takımlar</h3>
         <div className="team-grid">
           {teams.map((team: any) => (
-            <div className="team-card" key={team.id}>
-              <div className="team-icon">{team.name[0]}</div>
-              <h4>{team.name}</h4>
-            </div>
+            <div className={`team-card ${team.id === currentTeamId ? 'highlighted' : ''}`} key={team.id}>
+
+  <div className="team-icon">{team.name[0]}</div>
+  <h4>{team.name}</h4>
+  <a href={`/teams/${team.id}`} className="detail-link">Detaya Git</a> {/* EKLENDİ */}
+</div>
+
           ))}
         </div>
       </section>
@@ -168,9 +174,13 @@ const TurnuvaPage = () => {
         <h3>🗓️ Maç Programı</h3>
         <ul className="match-list">
           {matches.map(match => (
+            
             <li key={match.id}>
-              {match.matchDate.slice(0, 16).replace('T', ' ')} - {match.team1?.name} vs {match.team2?.name} @ {match.fieldName}
-            </li>
+  {match.matchDate.slice(0, 16).replace('T', ' ')} - {match.team1?.name} vs {match.team2?.name} @ {match.fieldName}
+  <br />
+  <a href={`/matches/${match.id}`} className="detail-link">Detaya Git</a> {/* EKLENDİ */}
+</li>
+
           ))}
         </ul>
       </section>

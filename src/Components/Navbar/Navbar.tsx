@@ -21,10 +21,11 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    navigate('/login');
-  };
+  localStorage.removeItem('token');
+  localStorage.removeItem('role');
+  window.location.href = '/login'; // <-- Hard redirect
+};
+
 
   return (
     <header className="home-navbar">

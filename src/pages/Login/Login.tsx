@@ -24,9 +24,9 @@ const Login = () => {
     // 🧠 Eğer token varsa ve rol admin ise => dashboard
     // değilse => anasayfa
     if (role === 'Admin') {
-      navigate('/dashboard');
+      window.location.href = '/dashboard';
     } else {
-      navigate('/');
+      window.location.href = '/';
     }
   } catch (err) {
     console.error(err);
