@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './TurnuvaPage.css';
 import CreateTeamModal from '../../Components/modals/CreateTeamModal';
@@ -150,7 +151,7 @@ const TurnuvaPage = () => {
             <div className={`team-card ${team.id === currentTeamId ? 'highlighted' : ''}`} key={team.id}>
               <div className="team-icon">{team.name[0]}</div>
               <h4>{team.name}</h4>
-              <a href={`/teams/${team.id}`} className="detail-link">Detaya Git</a>
+              <Link to={`/teams/${team.id}`} className="detail-link">Detaya Git</Link>
             </div>
           ))}
         </div>
@@ -163,7 +164,7 @@ const TurnuvaPage = () => {
             <li key={match.id}>
               {match.matchDate.slice(0, 16).replace('T', ' ')} - {match.team1?.name} vs {match.team2?.name} @ {match.fieldName}
               <br />
-              <a href={`/matches/${match.id}`} className="detail-link">Detaya Git</a>
+              <Link to={`/matches/${match.id}`} className="detail-link">Detaya Git</Link>
             </li>
           ))}
         </ul>
