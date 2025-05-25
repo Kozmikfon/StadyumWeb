@@ -22,6 +22,15 @@ import CaptainOffersPage from '../pages/Sender/Offers/CaptainOffersPage';
 import MatchStatsPage from '../pages/MatchStat/MatchStatsPage';
 import EditProfilePage from '../pages/Profile/EditPlayer/EditProfilePage';
 import MatchReviewsPage from '../pages/Reviews/MatchReviewsPage';
+import PlayersAdminPage from '../pages/Dashboard/Admin/PlayersAdminPage';
+import TeamsAdminPage from '../pages/Dashboard/Admin/TeamsAdminPage';
+import MatchesAdminPage from '../pages/Dashboard/Admin/MatchesAdminPage';
+import OffersAdminPage from '../pages/Dashboard/Admin/OffersAdminPage';
+import ReviewsAdminPage from '../pages/Dashboard/Admin/ReviewsAdminPage';
+import MatchStatsAdminPage from '../pages/Dashboard/Admin/MatchStatsAdminPage';
+import TeamMembersAdminPage from '../pages/Dashboard/Admin/TeamMembersAdminPage';
+import AttendanceAdminPage from '../pages/Dashboard/Admin/AttendanceAdminPage';
+import UsersAdminPage from '../pages/Dashboard/Admin/UsersAdminPage';
 
 
 
@@ -92,6 +101,15 @@ const AnimatedRoutes = () => {
             <Route path="/matches/:matchId/stats" element={motionWrap(<MatchStatsPage />)} />
             <Route path="/edit-profile" element={motionWrap(<EditProfilePage />)} />
             <Route path="/match-reviews/:matchId" element={<MatchReviewsPage />} />
+            <Route path="/admin/players" element={<PlayersAdminPage />} />
+      <Route path="/admin/teams" element={<TeamsAdminPage />} />
+      <Route path="/admin/matches" element={<MatchesAdminPage />} />
+      <Route path="/admin/offers" element={<OffersAdminPage />} />
+      <Route path="/admin/reviews" element={<ReviewsAdminPage />} />
+      <Route path="/admin/stats" element={<MatchStatsAdminPage />} />
+      <Route path="/admin/members" element={<TeamMembersAdminPage />} />
+      <Route path="/admin/attendance" element={<AttendanceAdminPage />} />
+      <Route path="/admin/users" element={<UsersAdminPage />} />
 
 
             <Route path="*" element={<Navigate to="/" />} />
