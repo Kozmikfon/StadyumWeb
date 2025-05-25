@@ -4,9 +4,9 @@ import './ImageSlider.css';
 
 import slide1 from '../assets/slider/top1.jpg';
 import slide2 from '../assets/slider/top5.jpg';
-//import slide3 from '../assets/slider/top3.jpg';
+import slide3 from '../assets/slider/tut.jpg';
 
-const images = [slide1, slide2];
+const images = [slide1, slide2,slide3];
 
 const ImageSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -21,7 +21,7 @@ const ImageSlider = () => {
   };
 
   useEffect(() => {
-    const interval = setInterval(goToNext, 9000);
+    const interval = setInterval(goToNext, 4000);
     return () => clearInterval(interval);
   }, []);
 

@@ -133,17 +133,17 @@ const TeamDetailPage: React.FC = () => {
 
       <h3>👥 Oyuncular</h3>
       <div className="player-grid">
-        {team.players.map((player) => (
-          <div className="player-card" key={player.id}>
-            <div className="player-avatar">{player.firstName[0].toUpperCase()}</div>
-            <h4>{player.firstName} {player.lastName}</h4>
-            <p><strong>Pozisyon:</strong> {player.position}</p>
-            <p><strong>Seviye:</strong> {player.skillLevel}</p>
-            <p><strong>Puan:</strong> {player.rating}</p>
-            <a href={`/players/${player.id}`} className="detail-link">Detay</a>
-          </div>
-        ))}
-      </div>
+  {team.players.map((player) => (
+    <div className="player-card" key={player.id}>
+      <div className="player-avatar">{player.firstName[0].toUpperCase()}</div>
+      <h4>{player.firstName} {player.lastName}</h4>
+      <p><strong>Pozisyon:</strong> {player.position}</p>
+      <p><strong>Seviye:</strong> {player.skillLevel}</p>
+      <p><strong>Puan:</strong> {player.rating}</p>
+      <Link to={`/players/${player.id}`} className="detail-link">Detay</Link>
+    </div>
+  ))}
+</div>
     </div>
   );
 };

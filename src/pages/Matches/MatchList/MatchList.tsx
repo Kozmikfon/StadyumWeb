@@ -35,8 +35,8 @@ const MatchList = () => {
 
   return (
     <div className="matches-container">
-      <div className="matchlist-banner">
-        <img src="/src/assets/resim.jpg" alt="Stadyum" className="matchlist-banner-image" />
+      <div className="matchlist-active-banner">
+        <img src="/src/assets/slider/tut.jpg" alt="Stadyum" className="matchlist-banner-image" />
       </div>
 
       <div className="matchlist-header">
