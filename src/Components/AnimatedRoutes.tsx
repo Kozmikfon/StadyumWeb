@@ -31,6 +31,7 @@ import MatchStatsAdminPage from '../pages/Dashboard/Admin/MatchStatsAdminPage';
 import TeamMembersAdminPage from '../pages/Dashboard/Admin/TeamMembersAdminPage';
 import AttendanceAdminPage from '../pages/Dashboard/Admin/AttendanceAdminPage';
 import UsersAdminPage from '../pages/Dashboard/Admin/UsersAdminPage';
+import TournamentAdminPage from '../pages/Dashboard/Admin/TournamentAdminPage';
 
 
 
@@ -110,6 +111,8 @@ const AnimatedRoutes = () => {
       <Route path="/admin/members" element={<TeamMembersAdminPage />} />
       <Route path="/admin/attendance" element={<AttendanceAdminPage />} />
       <Route path="/admin/users" element={<UsersAdminPage />} />
+      <Route path="/admin/tournament" element={<TournamentAdminPage />} />
+
 
 
             <Route path="*" element={<Navigate to="/" />} />

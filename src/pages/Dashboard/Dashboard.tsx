@@ -32,10 +32,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
 
   return (
     <div className="dashboard-container">
@@ -56,7 +52,7 @@ const Dashboard = () => {
           <button onClick={() => navigate('/admin/tournament')}>🏟️ Turnuva</button>
         </div>
 
-        <button className="logout-button" onClick={handleLogout}>Çıkış Yap</button>
+        
       </div>
     </div>
   );
